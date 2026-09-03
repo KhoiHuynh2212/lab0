@@ -1,12 +1,23 @@
-# Lab 0
+# 🔬 Lab 0
 
-## 🔧 Initial Setup
+This lab involves building a queueing system simulator and supporting workload, visualization, and analysis tools, then using them to model and evaluate both single-queue and multi-queue real-world systems.   
+
+- [🔬 Lab 0](#-lab-0)
+- [🔧 Initial Setup](#-initial-setup)
+- [🌳 Directory](#-directory)
+- [📋 Objectives](#-objectives)
+  - [Obj A](#obj-a)
+  - [Documentation](#documentation)
+- [🔗 Links](#-links)
+- [👥 Group 2](#-group-2)
+
+# 🔧 Initial Setup
 
 ```bash
 git clone git@gitlab.com:dos-team2/lab0
 ```
 
-## 🌳 Directory
+# 🌳 Directory
 
 ```
 .
@@ -74,22 +85,23 @@ git clone git@gitlab.com:dos-team2/lab0
 > Please remove `.gitkeep` files after adding to a blank directory  
 > Please remove `TODO.md` files after all tasks inside are complete
 
-## Objectives 
+# 📋 Objectives 
 
-### Obj A
+## Obj A
 
-#### Documentation
+## Documentation
 
 - [Workload Generator](/designs/obj-a/workload-generator/README.md): Generator will take as input a distribution, statistics, and interval then produce a synthetic workload
 - [Workload Visualizer](/designs/obj-a/workload-visualizer/README.md)
 
-## 🔗 Links
+# 🔗 Links
 
 - [Task Sheet](https://1drv.ms/x/c/470c9d6d25c55391/IQCHiMcoylyeQYELoJuQF3yGAQygDJI3jfT833fP3bGEcKg?e=Dsh32I)
-- [Report](https://overleaf.cs.ou.edu/project/6a98c77302875a2503a2537a)
+- [Final Report](https://overleaf.cs.ou.edu/project/6a98c77302875a2503a2537a)
+- [Presentation](https://sooners-my.sharepoint.com/:p:/g/personal/jace_ou_edu/IQAGarZVcGmxSbaPc47I2IXMAax3SK66qyfHr37jMrBJdx8?e=xniUSi)
 - [Download GlobalConnect VPN](https://itsupport.ou.edu/TDClient/30/Unified/KB/Article/128/About-OU-VPN-GlobalProtect-Options-for-your-Connection-Type)
 
-## 👥 Group 2
+# 👥 Group 2
 
 | Member |     Name     |   Role    |          Email           |   Discord    |
 | :----: | :----------: | :-------: | :----------------------: | :----------: |
