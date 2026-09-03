@@ -78,7 +78,8 @@ git clone git@gitlab.com:dos-team2/lab0
 ## 🔗 Links
 
 - [Task Sheet](https://1drv.ms/x/c/470c9d6d25c55391/IQCHiMcoylyeQYELoJuQF3yGAQygDJI3jfT833fP3bGEcKg?e=Dsh32I)
-- [Report](https://overleaf.cs.ou.edu/project/6a98c77302875a2503a2537a)
+- [Final Report](https://overleaf.cs.ou.edu/project/6a98c77302875a2503a2537a)
+- [Presentation](https://sooners-my.sharepoint.com/:p:/g/personal/jace_ou_edu/IQAGarZVcGmxSbaPc47I2IXMAax3SK66qyfHr37jMrBJdx8?e=xniUSi)
 - [Download GlobalConnect VPN](https://itsupport.ou.edu/TDClient/30/Unified/KB/Article/128/About-OU-VPN-GlobalProtect-Options-for-your-Connection-Type)
 
 ## 👥 Group 2
