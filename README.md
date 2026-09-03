@@ -1,10 +1,81 @@
 # Lab 0
 
-## 🔧 Setup
+## 🔧 Initial Setup
 
 ```bash
 git clone git@gitlab.com:dos-team2/lab0
 ```
+
+## Directory
+
+```
+.
+├── .gitlab-ci.yml
+├── analysis
+│   ├── multi-LARGE
+│   ├── multi-MEDIUM
+│   ├── multi-SMALL
+│   ├── simple
+│   └── TODO.md
+├── designs
+│   ├── obj-a
+│   │   ├── workload-generator
+│   │   └── workload-visualizer
+│   ├── obj-b
+│   │   └── simple-queue-sim
+│   ├── obj-c
+│   │   ├── compute-use
+│   │   ├── create-event-trace
+│   │   ├── derive-event-metrics
+│   │   ├── derive-sys-metrics
+│   │   ├── filter-by-job
+│   │   ├── filter-by-queue
+│   │   ├── plot-derive-event-metrics
+│   │   ├── plot-sys-metrics
+│   │   └── plot-use
+│   ├── obj-e
+│   │   ├── create-config-from-network
+│   │   ├── multi-queue-sim
+│   │   └── pretty-print-events
+│   └── TODO.md
+├── examples
+│   ├── obj-a
+│   ├── obj-b
+│   ├── obj-c
+│   ├── obj-e
+│   └── TODO.md
+├── implementation
+│   ├── obj-a
+│   │   ├── workload-generator
+│   │   └── workload-visualizer
+│   ├── obj-b
+│   │   └── simple-queue-sim
+│   │       ├── run-all-tests.sh
+│   │       └── simple-queue-sim
+│   ├── obj-c
+│   │   ├── compute-use
+│   │   ├── create-event-trace
+│   │   ├── derive-event-metrics
+│   │   ├── derive-sys-metrics
+│   │   ├── filter-by-job
+│   │   ├── filter-by-queue
+│   │   ├── plot-derive-event-metrics
+│   │   ├── plot-sys-metrics
+│   │   └── plot-use
+│   ├── obj-e
+│   │   ├── create-config-from-network
+│   │   ├── multi-queue-sim
+│   │   │   └── run-all-tests.sh
+│   │   └── pretty-print-events
+│   └── TODO.md
+├── lab
+│   ├── docs
+│   │   └── outline.pdf
+│   ├── run-all-tests.sh
+│   └── TODO.md
+└── README.md
+```
+
 
 ## 🔗 Links
 
