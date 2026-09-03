@@ -6,7 +6,7 @@
 git clone git@gitlab.com:dos-team2/lab0
 ```
 
-## Directory
+## 🌳 Directory
 
 ```
 .
@@ -15,8 +15,7 @@ git clone git@gitlab.com:dos-team2/lab0
 │   ├── multi-LARGE
 │   ├── multi-MEDIUM
 │   ├── multi-SMALL
-│   ├── simple
-│   └── TODO.md
+│   └── simple
 ├── designs
 │   ├── obj-a
 │   │   ├── workload-generator
@@ -33,17 +32,15 @@ git clone git@gitlab.com:dos-team2/lab0
 │   │   ├── plot-derive-event-metrics
 │   │   ├── plot-sys-metrics
 │   │   └── plot-use
-│   ├── obj-e
-│   │   ├── create-config-from-network
-│   │   ├── multi-queue-sim
-│   │   └── pretty-print-events
-│   └── TODO.md
+│   └── obj-e
+│       ├── create-config-from-network
+│       ├── multi-queue-sim
+│       └── pretty-print-events
 ├── examples
 │   ├── obj-a
 │   ├── obj-b
 │   ├── obj-c
-│   ├── obj-e
-│   └── TODO.md
+│   └── obj-e
 ├── implementation
 │   ├── obj-a
 │   │   ├── workload-generator
@@ -62,19 +59,20 @@ git clone git@gitlab.com:dos-team2/lab0
 │   │   ├── plot-derive-event-metrics
 │   │   ├── plot-sys-metrics
 │   │   └── plot-use
-│   ├── obj-e
-│   │   ├── create-config-from-network
-│   │   ├── multi-queue-sim
-│   │   │   └── run-all-tests.sh
-│   │   └── pretty-print-events
-│   └── TODO.md
+│   └── obj-e
+│       ├── create-config-from-network
+│       ├── multi-queue-sim
+│       │   └── run-all-tests.sh
+│       └── pretty-print-events
 ├── lab
 │   ├── docs
 │   │   └── outline.pdf
-│   ├── run-all-tests.sh
-│   └── TODO.md
+│   └── run-all-tests.sh
 └── README.md
 ```
+
+> Please remove `.gitkeep` files after adding to a blank directory  
+> Please remove `TODO.md` files after all tasks inside are complete
 
 
 ## 🔗 Links
