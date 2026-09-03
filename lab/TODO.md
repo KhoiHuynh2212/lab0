@@ -1,0 +1,5 @@
+- [ ] Initial Outline (wk 1) [`./lab/docs/outline.pdf Working Draft (wk 2) ./lab/docs/draft-1.pdf`](./lab/docs/outline.pdf Working Draft (wk 2) ./lab/docs/draft-1.pdf)
+- [ ] Working Draft (wk 3) [`./lab/docs/draft-2.pdf`](./lab/docs/draft-2.pdf)
+- [ ] Working Draft (wk 4) [`./lab/docs/draft-3.pdf`](./lab/docs/draft-3.pdf)
+- [ ] Writeup [`./lab/docs/final-report.pdf`](./lab/docs/final-report.pdf)
+- [ ] Presentation [`./lab/docs/slides.{pptx,pdf}`](./lab/docs/slides.{pptx,pdf})
