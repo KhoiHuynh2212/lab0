@@ -1,5 +1,5 @@
-- [ ] Write Pseudocode, work through example input/output, and find resources for [`./designs/obj-a/workload-generator/`](/designs/obj-a/workload-generator/)
-- [ ] Write Pseudocode, work through example input/output, and find resources for [`./designs/obj-a/workload-visualizer`](/designs/obj-a/workload-visualizer)
+- [x] Write Pseudocode, work through example input/output, and find resources for [`./designs/obj-a/workload-generator/`](/designs/obj-a/workload-generator/)
+- [x] Write Pseudocode, work through example input/output, and find resources for [`./designs/obj-a/workload-visualizer`](/designs/obj-a/workload-visualizer)
 - [ ] Write Pseudocode, work through example input/output, and find resources for [`./designs/obj-b/simple-queue-sim/`](/designs/obj-b/simple-queue-sim/)
 - [ ] Write Pseudocode, work through example input/output, and find resources for [`./designs/obj-c/filter-by-queue`](/designs/obj-c/filter-by-queue)
 - [ ] Write Pseudocode, work through example input/output, and find resources for [`./designs/obj-c/filter-by-job/`](/designs/obj-c/filter-by-job/)
