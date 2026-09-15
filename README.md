@@ -1,13 +1,13 @@
 # 🔬 Lab 0
 
-This lab involves building a queueing system simulator and supporting workload, visualization, and analysis tools, then using them to model and evaluate both single-queue and multi-queue real-world systems.   
+This lab involves building a queueing system simulator and supporting workload, visualization, and analysis tools, then using them to model and evaluate both single-queue and multi-queue real-world systems.
 
 - [🔬 Lab 0](#-lab-0)
 - [🔧 Initial Setup](#-initial-setup)
 - [🌳 Directory](#-directory)
 - [📋 Objectives](#-objectives)
   - [Obj A](#obj-a)
-  - [Documentation](#documentation)
+  - [Obj B](#obj-b)
 - [🔗 Links](#-links)
 - [👥 Group 2](#-group-2)
 
@@ -85,14 +85,17 @@ git clone git@gitlab.com:dos-team2/lab0
 > Please remove `.gitkeep` files after adding to a blank directory  
 > Please remove `TODO.md` files after all tasks inside are complete
 
-# 📋 Objectives 
+# 📋 Objectives
 
 ## Obj A
 
-## Documentation
-
 - [Workload Generator](/designs/obj-a/workload-generator/README.md): Generator will take as input a distribution, statistics, and interval then produce a synthetic workload
 - [Workload Visualizer](/designs/obj-a/workload-visualizer/README.md)
+
+## Obj B
+
+- [Dr. Veras's Example (with added comments)](./examples/obj-b/q_ex-1.py)
+  - [Explanation of Dr. Veras's Example](./examples/obj-b/q_ex-1_explained.md)
 
 # 🔗 Links
 
