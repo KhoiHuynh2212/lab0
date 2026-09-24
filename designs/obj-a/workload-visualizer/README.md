@@ -1,79 +1,68 @@
-# `workload-visualizer.py`
+# Workload Visualizer Design
 
-Reads a workload file and creates a graph that makes the workload easier to understand. The program can create either a histogram of one workload value or a scatter plot comparing two values.
+The workload visualizer reads a workload file and creates either a histogram or a scatter plot.
 
-## Psuedocode
+The two workload values needed by the Obj-A plots are:
 
-```txt
-INPUT:
-    Command-line arguments:
-        1. workload filename
-        2. output filename
-        3. plot mode
-            - histogram
-            - scatter
+- `arrival time`
+- `len(Tasks)`
 
-        IF histogram mode:
-            4. column name
-            - bin count
+`len(Tasks)` is calculated by reading the task list in each workload row.
 
-        IF scatter mode:
-            4. x-axis column name
-            5. y-axis column name
+## Inputs
 
-        - x-axis limits
-        - y-axis limits
-        - plot title
+The first command-line argument is the workload filename.
 
+Histogram mode accepts:
 
-OUTPUT:
-    Image file containing inputted graph
+- column name
+- bin count
+- output PNG filename
 
+Scatter mode accepts:
 
-MAIN:
-    Read and validate command-line arguments
+- x-axis column name
+- y-axis column name
+- output PNG filename
 
-    Read the workload file
+Both modes can also accept:
 
-    IF the plot uses len(Tasks):
-        calculate the number of tasks for each job
+- x-axis limits
+- y-axis limits
+- title
+- image width and height
 
-    IF plot mode is histogram:
-        Make sure the requested column exists
+## Pseudocode
 
-        Create a histogram using that column
+```text
+read command-line arguments
+make sure exactly one plot mode was selected
+read workload CSV
+find Job Id, arrival time, and Tasks columns
 
-        IF a bin count was provided:
-            use the requested number of bins
+for each workload row:
+    read arrival time
+    count tasks in Tasks list
+    store values needed for plotting
 
-    ELSE IF plot mode is scatter:
-        Make sure both requested columns exist
+if histogram mode:
+    get selected numeric column
+    divide selected x range into requested number of bins
+    count values in each bin
+    draw axes, grid, labels, and bars
 
-        Create a scatter plot using:
-            x-axis column
-            y-axis column
+if scatter mode:
+    get selected x and y columns
+    choose axis ranges
+    draw axes, grid, labels, and one point for each job
 
-    IF x-axis limits were provided:
-        apply them
-
-    IF y-axis limits were provided:
-        apply them
-
-    IF a title was provided:
-        apply it
-
-    Save the graph to the output filename
+apply optional x limits, y limits, and title
+write image as PNG
 ```
 
-## Worked Example
+## Worked histogram example
 
-### Input CSV
-
-```csv
-
-```
-
-### Histogram
+Input workload:
 
 ```csv
 Job Id,arrival time,Tasks
@@ -82,48 +71,44 @@ j1,10,"['0: W 10']"
 j2,20,"['0: W 10', '1: W 10', '2: W 10']"
 ```
 
-#### Input
+Command:
 
 ```bash
-python workload-visualizer.py workload.csv --hist="arrival time" --out="arrival-time.png"
+./workload-visualizer workload.csv \
+    --hist="arrival time" \
+    --bins=3 \
+    --out=arrival-time.png
 ```
 
-#### Output
+The histogram contains the arrival-time values 0, 10, and 20.
 
-`arrival-time.png`
+## Worked scatter example
+
+Command:
 
 ```bash
-Histogram of arrival time:
-    0  -> 1 job
-    10 -> 1 job
-    20 -> 1 job
+./workload-visualizer workload.csv \
+    --scat="arrival time,len(Tasks)" \
+    --out=arrival-vs-tasks.png
 ```
 
-### Scatterplot
+The plotted points are:
 
-#### Input
-
-```bash
-python workload-visualizer.py workload.csv --scat="arrival time,len(Tasks)" --out="arrival-vs-tasks.png"
-```
-
-#### Output
-
-`arrival-vs-tasks.png`
-
-```bash
-Points plotted as (arrival time, len(Tasks)):
-
+```text
 (0, 2)
 (10, 1)
 (20, 3)
 ```
 
-## Resources
+## PNG output design
 
-- Queue Lab slides, slide 2: workload format that the visualizer reads.
-- Queue Lab slides, slide 5: histogram and scatter plot requirements and examples
-- [`pandas.read_csv` documentation](https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html)
-- [Mathplotlib histogram documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.hist.html)
-- [Mathplotlib scatter documnetation](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.scatter.html)
-- [Python `argparse` documentation](https://docs.python.org/3/library/argparse.html): Command line inputs
+The visualizer writes PNG files directly from C++.
+
+The renderer:
+
+1. creates an RGB image in memory,
+2. draws the plot frame and data,
+3. converts the image rows to PNG scanlines,
+4. writes a valid PNG file with IHDR, IDAT, and IEND chunks.
+
+This keeps the visualizer self-contained and avoids requiring a separate plotting program at runtime.

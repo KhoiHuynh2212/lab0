@@ -1,105 +1,128 @@
-# `workload-generator.py`
+# Workload Generator Design
 
-Generates a synthetic workload of jobs over a given time interval. The number of jobs arriving is based on a selected distribution, and each job contains work tasks. The finished workload is sorted by arrival time.
+The workload generator creates a synthetic workload over an inclusive time interval. At each time step, it draws the number of arriving jobs from the selected distribution. Every job is given a sequential job ID and a task list.
 
-## Psuedocode
+The output format is:
 
-```txt
-INPUT:
-    Command-line arguments:
-        1. output filename
-        2. start time
-        3. end time
-        4. distribution type
-            - uniform
-            - normal
-            - geometric
-        5. parameters required by selected distribution
-        - task work mode
-            - fixed
-            - distribution
-        - fixed task work value, if fixed mode is selected
-        - random seed
-
-
-OUTPUT:
-    Workload fole sorted by arrival time, containing:
-        1. Job Id
-        2. arrival time
-        3. Tasks
-
-
-MAIN:
-    Read and validate command-line arguments
-
-    Create an empty workload
-    Set the next job ID to 0
-
-    FOR each time step from start time through end time:
-        Draw the number of arriving jobs from the selected distribution
-
-        Make sure the number of arriving jobs is a non-negative integer
-
-        FOR each arriving job:
-            Create a new job ID
-
-            Create an empty task list
-
-            Determine the tasks for the job
-
-            FOR each task:
-                IF task work mode is fixed:
-                    use the fixed work value
-
-                ELSE:
-                    draw a positive work value from the selected distribution
-
-                Add task in the form:
-                    "<task-id>: W <work>"
-
-            Add the job to the workload with:
-                job ID
-                current time as arrival time
-                task list
-
-            Increase the next job ID
-
-    Sort the workload by arrival time
-
-    Write the workload to the output file
+```text
+Job Id,arrival time,Tasks
 ```
 
-## Worked Example
+Each task has the form:
 
-### Input
-
-```txt
-Interval:
-    start time = 0
-    end time = 20
-
-Distribution:
-    poisson
-
-Task work:
-    fixed at 10
+```text
+<task-id>: W <positive number>
 ```
 
-### Output
+## Inputs
 
-```txt
+The generator accepts all of its settings through command-line arguments.
+
+Required inputs are:
+
+- output filename
+- interval start and end
+- distribution type
+- statistics required by that distribution
+
+Supported distributions are:
+
+- uniform
+- normal
+- geometric
+- Poisson
+
+Task work can either be fixed or drawn from the same distribution.
+
+## Pseudocode
+
+```text
+read command-line arguments
+validate interval, distribution statistics, and task settings
+create random-number engine
+create empty workload
+set next job number to 0
+
+for each time step from interval start through interval end:
+    draw number of arriving jobs from selected distribution
+    convert the result to a non-negative integer
+
+    repeat once for each arriving job:
+        create job ID using next job number
+        create empty task list
+
+        for each task assigned to the job:
+            if task work is fixed:
+                use fixed work amount
+            else:
+                draw from selected distribution until work is positive
+
+            add task as "<task-id>: W <work>"
+
+        add job with current time as arrival time
+        increase next job number
+
+sort jobs by arrival time
+write CSV header
+write every job to output workload
+```
+
+## Distribution behavior
+
+### Uniform
+
+Draw an integer from an inclusive minimum and maximum.
+
+### Normal
+
+Draw a real value from the requested mean and standard deviation, round it to an integer, and use zero if the rounded arrival count would be negative.
+
+### Geometric
+
+Use the probability parameter to draw the number of failures before a success. The result is already a non-negative integer.
+
+### Poisson
+
+Use lambda as the expected event count. The result is already a non-negative integer.
+
+## Worked example
+
+Command:
+
+```bash
+./workload-generator \
+    --out workload.csv \
+    --interval 0,2 \
+    --distribution uniform \
+    --min 1 \
+    --max 1 \
+    --tasks-per-job 2 \
+    --task-work fixed \
+    --fixed-task-work 10 \
+    --seed 1
+```
+
+Because the uniform range is exactly 1 through 1, one job arrives at every time step.
+
+Output:
+
+```csv
 Job Id,arrival time,Tasks
 j0,0,"['0: W 10', '1: W 10']"
-j1,10,"['0: W 10']"
-j2,20,"['0: W 10', '1: W 10', '2: W 10']"
+j1,1,"['0: W 10', '1: W 10']"
+j2,2,"['0: W 10', '1: W 10']"
 ```
 
-> Each task follows the format:  
-> `{task-id}: W {positive number}`
+The output is already sorted by arrival time and can be used as an Obj-B source workload.
 
-## Resources
+## C++ resources
 
-- Queue Lab slides, slide 2: workload format and task format.
-- Queue Lab slides, slide 3: format of completed jobs.
-- Queue Lab slides, slide 4: workload generator requirements and supported distributions.
-- [Python `argparse` documentation](https://docs.python.org/3/library/argparse.html): Command line inputs
+The implementation uses the C++ standard random library:
+
+- `std::uniform_int_distribution`
+- `std::normal_distribution`
+- `std::geometric_distribution`
+- `std::poisson_distribution`
+- `std::mt19937_64`
+
+The CSV writer uses only the C++ standard library.
