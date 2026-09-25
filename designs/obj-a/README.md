@@ -1,68 +1,47 @@
-# Workload Visualizer Design
+# Objective A Design
 
-The workload visualizer reads a workload file and creates either a histogram or a scatter plot.
+Objective A creates workload data and then gives us a way to look at that data before it is sent into the queue simulator.
 
-The two workload values needed by the Obj-A plots are:
+It has two parts:
 
-- `arrival time`
-- `len(Tasks)`
+1. [`workload-generator/`](/designs/obj-a/workload-generator/) - creates synthetic workloads
+2. [`workload-visualizer/`](/designs/obj-a/workload-visualizer/) - turns workload values into PNG plots
 
-`len(Tasks)` is calculated by reading the task list in each workload row.
-
-## Inputs
-
-The first command-line argument is the workload filename.
-
-Histogram mode accepts:
-
-- column name
-- bin count
-- output PNG filename
-
-Scatter mode accepts:
-
-- x-axis column name
-- y-axis column name
-- output PNG filename
-
-Both modes can also accept:
-
-- x-axis limits
-- y-axis limits
-- title
-- image width and height
-
-## Pseudocode
+The overall design is:
 
 ```text
-read command-line arguments
-make sure exactly one plot mode was selected
-read workload CSV
-find Job Id, arrival time, and Tasks columns
-
-for each workload row:
-    read arrival time
-    count tasks in Tasks list
-    store values needed for plotting
-
-if histogram mode:
-    get selected numeric column
-    divide selected x range into requested number of bins
-    count values in each bin
-    draw axes, grid, labels, and bars
-
-if scatter mode:
-    get selected x and y columns
-    choose axis ranges
-    draw axes, grid, labels, and one point for each job
-
-apply optional x limits, y limits, and title
-write image as PNG
+               ┌────────────────────┐
+               │ Generator settings │
+               └─────────┬──────────┘
+                         │
+                         ↓
+               ┌────────────────────┐
+               │ workload-generator │
+               └─────────┬──────────┘
+                         │
+                         ↓
+               ┌────────────────────┐
+               │    workload.csv    │
+               └─────────┬──────────┘
+                         │
+              ┌──────────┴──────────┐
+              │                     │
+              ↓                     ↓
+    ┌─────────────────────┐   ┌─────────────────────┐
+    │ workload-visualizer │   │        Obj-B        │
+    └──────────┬──────────┘   └──────────┬──────────┘
+               │                         │
+               ↓                         ↓
+    ┌─────────────────────┐   ┌─────────────────────┐
+    │      plot.png       │   │    queue outputs    │
+    └─────────────────────┘   └─────────────────────┘
 ```
 
-## Worked histogram example
+---
 
-Input workload:
+## 1. Shared Workload Format
+
+Both Obj-A tools use the same workload format as Obj-B:
 
 ```csv
 Job Id,arrival time,Tasks
@@ -71,44 +50,117 @@ j1,10,"['0: W 10']"
 j2,20,"['0: W 10', '1: W 10', '2: W 10']"
 ```
 
-Command:
+Each task has this form:
 
-```bash
-./workload-visualizer workload.csv \
-    --hist="arrival time" \
-    --bins=3 \
-    --out=arrival-time.png
+```txt
+<task-id>: W <positive work amount>
 ```
 
-The histogram contains the arrival-time values 0, 10, and 20.
+For example:
 
-## Worked scatter example
-
-Command:
-
-```bash
-./workload-visualizer workload.csv \
-    --scat="arrival time,len(Tasks)" \
-    --out=arrival-vs-tasks.png
+```txt
+1: W 20
 ```
 
-The plotted points are:
+means task `1` has `20` units of work.
+
+If a job has no tasks:
+
+```txt
+[]
+```
+
+then the job is complete.
+
+---
+
+## 2. Workload Generator
+
+The generator creates jobs over a chosen time interval.
+
+At each timestep it:
+
+1. draws the number of arriving jobs from a distribution
+2. gives each job a unique ID
+3. creates the requested number of tasks
+4. gives each task either fixed work or distributed work
+5. writes the jobs in arrival-time order
+
+The supported arrival distributions are:
+
+```txt
+uniform
+normal
+geometric
+poisson
+```
+
+Detailed pseudocode and a worked example are in:
+
+[`/designs/obj-a/workload-generator/README.md`](/designs/obj-a/workload-generator/README.md)
+
+The working program is in:
+
+[`/implementation/obj-a/workload-generator/`](/implementation/obj-a/workload-generator/)
+
+---
+
+## 3. Workload Visualizer
+
+The visualizer reads a workload and makes one of two plots:
+
+```txt
+Histogram:  one workload value -> frequency bars
+Scatter:    two workload values -> one point per job
+```
+
+The main values used for plotting are:
+
+- `arrival time`
+- `len(Tasks)`
+
+`len(Tasks)` is found by counting the tasks in each job.
+
+Detailed pseudocode and worked examples are in:
+
+[`/designs/obj-a/workload-visualizer/README.md`](/designs/obj-a/workload-visualizer/README.md)
+
+The working program is in:
+
+[`/implementation/obj-a/workload-visualizer/`](/implementation/obj-a/workload-visualizer/)
+
+---
+
+## 4. Connection to Objective B
+
+The generator does not need a conversion step before Obj-B.
 
 ```text
-(0, 2)
-(10, 1)
-(20, 3)
+┌────────────────────────┐
+│ Obj-A generator output │
+└────────────┬───────────┘
+             │
+             ↓
+┌────────────────────────┐
+│ Job Id, arrival time,  │
+│ Tasks                  │
+└────────────┬───────────┘
+             │
+             ↓
+┌────────────────────────┐
+│ Obj-B source workload  │
+└────────────────────────┘
 ```
 
-## PNG output design
+Obj-B also writes completed jobs using the same three columns. This means the visualizer can read either:
 
-The visualizer writes PNG files directly from C++.
+- a workload before simulation
+- or a completed sink workload after simulation
 
-The renderer:
+Example files are in:
 
-1. creates an RGB image in memory,
-2. draws the plot frame and data,
-3. converts the image rows to PNG scanlines,
-4. writes a valid PNG file with IHDR, IDAT, and IEND chunks.
+[`/examples/obj-a/`](/examples/obj-a/)
 
-This keeps the visualizer self-contained and avoids requiring a separate plotting program at runtime.
+The complete Obj-A run guide is in:
+
+[`/implementation/obj-a/README.md`](/implementation/obj-a/README.md)

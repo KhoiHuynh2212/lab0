@@ -1,0 +1,2 @@
+Queue sys ID,Max Queue Size,# of servers,Server Function,Server Function Rate,source,sink,Edges in,Edges out
+q0,8,1,Sub-10*,1,generated.csv,completed.csv,[],[]

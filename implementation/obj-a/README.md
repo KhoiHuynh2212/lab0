@@ -1,13 +1,72 @@
-# Obj-A: Workload Tools
+# Objective A: Workload Tools
 
-Obj-A contains two C++ programs:
+Objective A contains two C++ programs:
 
-- [`workload-generator`](./workload-generator/) creates synthetic workload CSV files.
-- [`workload-visualizer`](./workload-visualizer/) creates PNG histograms and scatter plots from workload CSV files.
+- [`workload-generator/`](./workload-generator/) creates synthetic workload CSV files.
+- [`workload-visualizer/`](./workload-visualizer/) creates PNG histograms and scatter plots from workload CSV files.
 
-Both tools use the same workload format as Obj-B.
+Both programs use the same workload format as Objective B.
 
-## Build all of Obj-A
+```text
+             ┌────────────────────┐
+             │ workload-generator │
+             └─────────┬──────────┘
+                       │
+                       ↓
+             ┌────────────────────┐
+             │    workload.csv    │
+             └─────────┬──────────┘
+                       │
+              ┌────────┴────────┐
+              │                 │
+              ↓                 ↓
+┌─────────────────────┐  ┌─────────────────┐
+│ workload-visualizer │  │      Obj-B      │
+└──────────┬──────────┘  └────────┬────────┘
+           │                      │
+           ↓                      ↓
+┌─────────────────────┐  ┌─────────────────┐
+│      plot.png       │  │  queue outputs  │
+└─────────────────────┘  └─────────────────┘
+```
+
+---
+
+## 1. Input and Output
+
+### Workload Generator
+
+Input is given through command-line options such as:
+
+- interval
+- distribution
+- distribution statistics
+- tasks per job
+- task-work mode
+- optional seed
+
+Output is a CSV workload:
+
+```csv
+Job Id,arrival time,Tasks
+j0,0,"['0: W 10', '1: W 10']"
+```
+
+### Workload Visualizer
+
+Input is a workload CSV plus plot options.
+
+Output is a PNG image:
+
+```text
+┌──────────────┐     ┌─────────────────────┐     ┌──────────┐
+│ workload.csv │ ──→ │ workload-visualizer │ ──→ │ plot.png │
+└──────────────┘     └─────────────────────┘     └──────────┘
+```
+
+---
+
+## 2. Build All of Obj-A
 
 From this directory:
 
@@ -15,75 +74,219 @@ From this directory:
 make
 ```
 
-Or from the repository root:
+or:
+
+```bash
+make build
+```
+
+From the repository root:
 
 ```bash
 make -C implementation/obj-a
 ```
 
+or:
+
+```bash
+make -C implementation/obj-a build
+```
+
 The executables are:
 
-- [`implementation/obj-a/workload-generator/workload-generator`](/implementation/obj-a/workload-generator/workload-generator)
-- [`implementation/obj-a/workload-visualizer/workload-visualizer`](/implementation/obj-a/workload-generator/workload-generator)
+```txt
+implementation/obj-a/workload-generator/workload-generator
+implementation/obj-a/workload-visualizer/workload-visualizer
+```
 
-## Run the generator
+---
+
+## 3. Clean Obj-A
+
+From this directory:
+
+```bash
+make clean
+```
+
+From the repository root:
+
+```bash
+make -C implementation/obj-a clean
+```
+
+---
+
+## 4. Run the Workload Generator
+
+A uniform example:
 
 ```bash
 implementation/obj-a/workload-generator/workload-generator \
-    --out examples/obj-a/generated.csv \
+    --out generated.csv \
     --interval 0,20 \
-    --distribution poisson \
-    --lambda 1.5 \
+    --distribution uniform \
+    --min 0 \
+    --max 2 \
     --tasks-per-job 2 \
     --task-work fixed \
     --fixed-task-work 10 \
+    --seed 7
+```
+
+A Poisson example:
+
+```bash
+implementation/obj-a/workload-generator/workload-generator \
+    --out generated.csv \
+    --interval 0,50 \
+    --distribution poisson \
+    --lambda 1.5 \
+    --tasks-per-job 1 \
+    --task-work distribution \
     --seed 42
 ```
 
-## Run the visualizer
+For every generator option and every supported distribution, see:
 
-Histogram:
+[`/implementation/obj-a/workload-generator/README.md`](/implementation/obj-a/workload-generator/README.md)
+
+---
+
+## 5. Run the Workload Visualizer
+
+### Histogram
 
 ```bash
 implementation/obj-a/workload-visualizer/workload-visualizer \
-    examples/obj-a/generated.csv \
+    generated.csv \
     --hist="arrival time" \
     --bins=10 \
-    --out=examples/obj-a/generated-arrivals.png
+    --out=generated-arrivals.png
 ```
 
-Scatter plot:
+### Scatter Plot
 
 ```bash
 implementation/obj-a/workload-visualizer/workload-visualizer \
-    examples/obj-a/generated.csv \
+    generated.csv \
     --scat="arrival time,len(Tasks)" \
-    --out=examples/obj-a/generated-scatter.png
+    --out=generated-scatter.png
 ```
 
-## Connection to Obj-B
+For titles, limits, image size, and every plot option, see:
+
+[`/implementation/obj-a/workload-visualizer/README.md`](/implementation/obj-a/workload-visualizer/README.md)
+
+---
+
+## 6. Run the Obj-A Tests
+
+The Makefile supports these test commands:
+
+```bash
+make test
+make run-tests-coverage
+make run-tests-leak
+```
+
+From the repository root:
+
+```bash
+make -C implementation/obj-a test
+make -C implementation/obj-a run-tests-coverage
+make -C implementation/obj-a run-tests-leak
+```
+
+The tests use Valgrind, so Valgrind must be available before using the Makefile test targets.
+
+The test script can also be run directly:
+
+```bash
+implementation/obj-a/run-all-tests.sh
+implementation/obj-a/run-all-tests.sh all
+implementation/obj-a/run-all-tests.sh coverage
+implementation/obj-a/run-all-tests.sh leak
+```
+
+The Obj-A test script runs:
+
+```text
+┌──────────────────────────┐
+│ workload-generator tests │
+└────────────┬─────────────┘
+             │
+             ↓
+┌──────────────────────────┐
+│ workload-visualizer tests│
+└────────────┬─────────────┘
+             │
+             ↓
+┌──────────────────────────┐
+│ Obj-A → Obj-B            │
+│ compatibility test       │
+└──────────────────────────┘
+```
+
+The compatibility test confirms that a generated Obj-A workload can be read by Obj-B and that the visualizer can read the same workload format.
+
+---
+
+## 7. Connection to Obj-B
 
 The generator writes:
 
-```text
+```txt
 Job Id,arrival time,Tasks
 ```
 
-That is the source workload format read by Obj-B. A generated file can therefore be placed in the `source` column of an Obj-B queue configuration.
+Obj-B expects the same format for its source workload.
 
-Example configuration:
+For example:
 
 ```csv
 Queue sys ID,Max Queue Size,# of servers,Server Function,Server Function Rate,source,sink,Edges in,Edges out
 q0,8,1,Sub-10*,10,generated.csv,out.csv,[],[]
 ```
 
-Obj-B writes completed jobs back to the same workload format. The visualizer can read either a generated source workload or an Obj-B sink workload.
+The full connection is:
 
-## Tests
-
-Run both Obj-A suites plus an Obj-A-to-Obj-B compatibility test:
-
-```bash
-./run-all-tests.sh
+```text
+             ┌─────────────────┐
+             │ Obj-A Generator │
+             └────────┬────────┘
+                      │
+                      ↓
+             ┌─────────────────┐
+             │  generated.csv  │
+             └────────┬────────┘
+                      │
+                      ↓
+             ┌─────────────────┐
+             │ Obj-B Simulator │
+             └────────┬────────┘
+                      │
+             ┌────────┼────────┐
+             │        │        │
+             ↓        ↓        ↓
+       ┌─────────┐ ┌──────────┐ ┌─────────┐
+       │ out.csv │ │ qmet.csv │ │ job.log │
+       └─────────┘ └──────────┘ └─────────┘
 ```
+
+Obj-B writes completed jobs back to the same workload format. The visualizer can therefore read both:
+
+- source workloads created by Obj-A
+- sink workloads created by Obj-B
+
+For a full Obj-A-to-Obj-B walkthrough, see the main [`/README.md`](/README.md#5-running-obj-a-and-obj-b-together).
+
+---
+
+## 8. Related Documentation
+
+- [Obj-A design](/designs/obj-a/README.md)
+- [Generator design](/designs/obj-a/workload-generator/README.md)
+- [Visualizer design](/designs/obj-a/workload-visualizer/README.md)
+- [Obj-A examples](/examples/obj-a/README.md)
+- [Obj-B simulator](/implementation/obj-b/simple-queue-sim/README.md)

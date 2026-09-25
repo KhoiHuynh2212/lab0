@@ -1,68 +1,20 @@
 # Workload Visualizer Design
 
-The workload visualizer reads a workload file and creates either a histogram or a scatter plot.
+The workload visualizer reads a workload CSV and turns selected workload values into a PNG image.
 
-The two workload values needed by the Obj-A plots are:
+The working C++ program is here:
 
-- `arrival time`
-- `len(Tasks)`
+[`/implementation/obj-a/workload-visualizer/`](/implementation/obj-a/workload-visualizer/)
 
-`len(Tasks)` is calculated by reading the task list in each workload row.
+Example workload files are here:
 
-## Inputs
+[`/examples/obj-a/`](/examples/obj-a/)
 
-The first command-line argument is the workload filename.
+---
 
-Histogram mode accepts:
+## 1. Input
 
-- column name
-- bin count
-- output PNG filename
-
-Scatter mode accepts:
-
-- x-axis column name
-- y-axis column name
-- output PNG filename
-
-Both modes can also accept:
-
-- x-axis limits
-- y-axis limits
-- title
-- image width and height
-
-## Pseudocode
-
-```text
-read command-line arguments
-make sure exactly one plot mode was selected
-read workload CSV
-find Job Id, arrival time, and Tasks columns
-
-for each workload row:
-    read arrival time
-    count tasks in Tasks list
-    store values needed for plotting
-
-if histogram mode:
-    get selected numeric column
-    divide selected x range into requested number of bins
-    count values in each bin
-    draw axes, grid, labels, and bars
-
-if scatter mode:
-    get selected x and y columns
-    choose axis ranges
-    draw axes, grid, labels, and one point for each job
-
-apply optional x limits, y limits, and title
-write image as PNG
-```
-
-## Worked histogram example
-
-Input workload:
+The first input is a workload file:
 
 ```csv
 Job Id,arrival time,Tasks
@@ -70,6 +22,191 @@ j0,0,"['0: W 10', '1: W 10']"
 j1,10,"['0: W 10']"
 j2,20,"['0: W 10', '1: W 10', '2: W 10']"
 ```
+
+The visualizer reads two useful numeric values from each row:
+
+```txt
+arrival time
+len(Tasks)
+```
+
+For the three jobs above:
+
+| Job  | arrival time | len(Tasks) |
+| :--: | :----------: | :--------: |
+| `j0` |      0       |     2      |
+| `j1` |      10      |     1      |
+| `j2` |      20      |     3      |
+
+The user also chooses exactly one plot mode:
+
+- histogram
+- scatter plot
+
+---
+
+## 2. Output
+
+The output is a PNG image.
+
+```text
+┌─────────────────────┐
+│    workload.csv     │
+└──────────┬──────────┘
+           │
+           ↓
+┌─────────────────────┐
+│ workload-visualizer │
+└──────────┬──────────┘
+           │
+           ↓
+┌─────────────────────┐
+│      plot.png       │
+└─────────────────────┘
+```
+
+The output filename is chosen with `--out`.
+
+---
+
+## 3. Histogram Design
+
+A histogram uses one numeric workload column.
+
+For example:
+
+```txt
+arrival time values:
+0, 10, 20
+```
+
+The program:
+
+1. chooses the x-axis range
+2. divides that range into bins
+3. counts how many values belong in each bin
+4. draws one bar for each bin
+5. writes the image as a PNG
+
+Pseudocode:
+
+```txt
+read workload
+get selected numeric column
+choose plot limits
+split x range into bins
+count values in each bin
+draw axes and bars
+write PNG
+```
+
+---
+
+## 4. Scatter Plot Design
+
+A scatter plot uses two numeric workload columns.
+
+With:
+
+```txt
+x = arrival time
+y = len(Tasks)
+```
+
+the example workload becomes:
+
+```txt
+(0, 2)
+(10, 1)
+(20, 3)
+```
+
+Pseudocode:
+
+```txt
+read workload
+get x column
+get y column
+choose x and y ranges
+for each job:
+    draw one point at (x, y)
+write PNG
+```
+
+A rough view is:
+
+```txt
+len(Tasks)
+    ↑
+  3 │                 •
+  2 │ •
+  1 │         •
+  0 └────────────────────→ arrival time
+      0       10       20
+```
+
+---
+
+## 5. Plot Options
+
+Both plot modes can use:
+
+- x-axis limits
+- y-axis limits
+- title
+- image width
+- image height
+
+Histogram mode also uses a bin count.
+
+The default image size is:
+
+```txt
+1000 x 700
+```
+
+The minimum allowed image size is:
+
+```txt
+400 x 300
+```
+
+---
+
+## 6. PNG Output
+
+The program writes the PNG directly from C++.
+
+The basic steps are:
+
+```text
+┌──────────────────────────────┐
+│    create image in memory    │
+└──────────────┬───────────────┘
+               │
+               ↓
+┌──────────────────────────────┐
+│ draw background, axes,       │
+│ labels, and data             │
+└──────────────┬───────────────┘
+               │
+               ↓
+┌──────────────────────────────┐
+│ convert image rows to        │
+│ PNG data                     │
+└──────────────┬───────────────┘
+               │
+               ↓
+┌──────────────────────────────┐
+│        write PNG file        │
+└──────────────────────────────┘
+```
+
+This keeps the visualizer self-contained.
+
+---
+
+## 7. Worked Histogram Example
 
 Command:
 
@@ -80,9 +217,15 @@ Command:
     --out=arrival-time.png
 ```
 
-The histogram contains the arrival-time values 0, 10, and 20.
+The values being plotted are:
 
-## Worked scatter example
+```txt
+0, 10, 20
+```
+
+---
+
+## 8. Worked Scatter Example
 
 Command:
 
@@ -92,23 +235,27 @@ Command:
     --out=arrival-vs-tasks.png
 ```
 
-The plotted points are:
+The points are:
 
-```text
+```txt
 (0, 2)
 (10, 1)
 (20, 3)
 ```
 
-## PNG output design
+---
 
-The visualizer writes PNG files directly from C++.
+## 9. Connection to the Rest of the Lab
 
-The renderer:
+The visualizer can read:
 
-1. creates an RGB image in memory,
-2. draws the plot frame and data,
-3. converts the image rows to PNG scanlines,
-4. writes a valid PNG file with IHDR, IDAT, and IEND chunks.
+```txt
+Obj-A generated workloads
+Obj-B completed sink workloads
+```
 
-This keeps the visualizer self-contained and avoids requiring a separate plotting program at runtime.
+This means it can show the workload before or after simulation.
+
+For every run option, see:
+
+[`/implementation/obj-a/workload-visualizer/README.md`](/implementation/obj-a/workload-visualizer/README.md)
