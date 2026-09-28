@@ -1,0 +1,5 @@
+compute-use
+.test-build/
+*.gcda
+*.gcno
+*.gcov

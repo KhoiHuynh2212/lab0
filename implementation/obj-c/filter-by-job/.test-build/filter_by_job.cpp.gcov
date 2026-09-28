@@ -1,0 +1,291 @@
+        -:    0:Source:/mnt/c/Users/joyli/Desktop/School/Senior/Fall 26/DOS/DOS/Labs/Lab0/lab0/implementation/obj-c/filter-by-job/src/filter_by_job.cpp
+        -:    0:Graph:tests-filter-by-job-filter_by_job.gcno
+        -:    0:Data:tests-filter-by-job-filter_by_job.gcda
+        -:    0:Runs:1
+        -:    1:#include "filter_by_job.hpp"
+        -:    2:
+        -:    3:#include <fstream>
+        -:    4:#include <sstream>
+        -:    5:#include <stdexcept>
+        -:    6:
+        -:    7:using namespace std;
+        -:    8:
+        -:    9:namespace filter_by_job
+        -:   10:{
+        -:   11:    namespace
+        -:   12:    {
+function _ZN13filter_by_job12_GLOBAL__N_115trim_whitespaceERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE called 7 returned 100% blocks executed 85%
+        7:   13:        string trim_whitespace(const string &input_text)
+        -:   14:        {
+        7:   15:            const size_t first_non_whitespace = input_text.find_first_not_of(" \t\r\n");
+call    0 returned 7
+        7:   16:            if (first_non_whitespace == string::npos)
+branch  0 taken 1 (fallthrough)
+branch  1 taken 6
+        -:   17:            {
+        2:   18:                return "";
+call    0 returned 1
+branch  1 taken 1 (fallthrough)
+branch  2 taken 0 (throw)
+        -:   19:            }
+        -:   20:
+        6:   21:            const size_t last_non_whitespace = input_text.find_last_not_of(" \t\r\n");
+call    0 returned 6
+        -:   22:            return input_text.substr(first_non_whitespace,
+        6:   23:                                     last_non_whitespace - first_non_whitespace + 1);
+call    0 returned 6
+        -:   24:        }
+        -:   25:
+function _ZN13filter_by_job12_GLOBAL__N_130strip_trailing_carriage_returnENSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE called 11 returned 100% blocks executed 100%
+       11:   26:        string strip_trailing_carriage_return(string line)
+        -:   27:        {
+       11:   28:            if (!line.empty() && line.back() == '\r')
+call    0 returned 11
+branch  1 taken 10 (fallthrough)
+branch  2 taken 1
+call    3 returned 10
+branch  4 taken 3 (fallthrough)
+branch  5 taken 7
+branch  6 taken 3 (fallthrough)
+branch  7 taken 8
+        -:   29:            {
+        3:   30:                line.pop_back();
+call    0 returned 3
+        -:   31:            }
+       11:   32:            return line;
+call    0 returned 11
+        -:   33:        }
+        -:   34:    } // namespace
+        -:   35:
+function _ZN13filter_by_job16filter_event_logERKNSt10filesystem7__cxx114pathES4_RKSt13unordered_setINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt4hashISB_ESt8equal_toISB_ESaISB_EE called 7 returned 29% blocks executed 73%
+        7:   36:    void filter_event_log(const filesystem::path &input_path,
+        -:   37:                          const filesystem::path &output_path,
+        -:   38:                          const unordered_set<string> &allowed_jobs)
+        -:   39:    {
+        7:   40:        if (allowed_jobs.empty())
+call    0 returned 7
+branch  1 taken 1 (fallthrough)
+branch  2 taken 6
+        -:   41:        {
+        1:   42:            throw runtime_error("provide at least one job id with --job= or --jobs=");
+call    0 returned 1
+call    1 returned 1
+branch  2 taken 1 (fallthrough)
+branch  3 taken 0 (throw)
+call    4 returned 1
+call    5 never executed
+        -:   43:        }
+        -:   44:
+        6:   45:        ifstream input_file(input_path);
+call    0 returned 6
+branch  1 taken 6 (fallthrough)
+branch  2 taken 0 (throw)
+        6:   46:        if (!input_file)
+call    0 returned 6
+branch  1 taken 6 (fallthrough)
+branch  2 taken 0 (throw)
+branch  3 taken 1 (fallthrough)
+branch  4 taken 5
+        -:   47:        {
+        1:   48:            throw runtime_error("cannot read input file: " + input_path.string());
+call    0 returned 1
+call    1 returned 1
+branch  2 taken 1 (fallthrough)
+branch  3 taken 0 (throw)
+call    4 returned 1
+branch  5 taken 1 (fallthrough)
+branch  6 taken 0 (throw)
+call    7 returned 1
+branch  8 taken 1 (fallthrough)
+branch  9 taken 0 (throw)
+call   10 returned 1
+call   11 returned 1
+call   12 returned 1
+call   13 never executed
+call   14 never executed
+call   15 never executed
+        -:   49:        }
+        -:   50:
+        5:   51:        string header_line;
+call    0 returned 5
+        5:   52:        if (!getline(input_file, header_line))
+call    0 returned 5
+branch  1 taken 5 (fallthrough)
+branch  2 taken 0 (throw)
+call    3 returned 5
+branch  4 taken 5 (fallthrough)
+branch  5 taken 0 (throw)
+branch  6 taken 1 (fallthrough)
+branch  7 taken 4
+        -:   53:        {
+        1:   54:            throw runtime_error("input file is empty");
+call    0 returned 1
+call    1 returned 1
+branch  2 taken 1 (fallthrough)
+branch  3 taken 0 (throw)
+call    4 returned 1
+call    5 never executed
+        -:   55:        }
+        4:   56:        header_line = strip_trailing_carriage_return(header_line);
+call    0 returned 4
+branch  1 taken 4 (fallthrough)
+branch  2 taken 0 (throw)
+call    3 returned 4
+call    4 returned 4
+call    5 returned 4
+call    6 returned 4
+        -:   57:
+        4:   58:        ofstream output_file(output_path, ios::trunc);
+call    0 returned 4
+branch  1 taken 4 (fallthrough)
+branch  2 taken 0 (throw)
+        4:   59:        if (!output_file)
+call    0 returned 4
+branch  1 taken 4 (fallthrough)
+branch  2 taken 0 (throw)
+branch  3 taken 1 (fallthrough)
+branch  4 taken 3
+        -:   60:        {
+        1:   61:            throw runtime_error("cannot write output file: " + output_path.string());
+call    0 returned 1
+call    1 returned 1
+branch  2 taken 1 (fallthrough)
+branch  3 taken 0 (throw)
+call    4 returned 1
+branch  5 taken 1 (fallthrough)
+branch  6 taken 0 (throw)
+call    7 returned 1
+branch  8 taken 1 (fallthrough)
+branch  9 taken 0 (throw)
+call   10 returned 1
+call   11 returned 1
+call   12 returned 1
+call   13 never executed
+call   14 never executed
+call   15 never executed
+        -:   62:        }
+        -:   63:
+        3:   64:        output_file << header_line << '\n';
+call    0 returned 3
+branch  1 taken 3 (fallthrough)
+branch  2 taken 0 (throw)
+call    3 returned 3
+branch  4 taken 3 (fallthrough)
+branch  5 taken 0 (throw)
+        -:   65:
+        3:   66:        string current_line;
+call    0 returned 3
+        3:   67:        size_t line_number = 1;
+        9:   68:        while (getline(input_file, current_line))
+call    0 returned 9
+branch  1 taken 9 (fallthrough)
+branch  2 taken 0 (throw)
+call    3 returned 9
+branch  4 taken 9 (fallthrough)
+branch  5 taken 0 (throw)
+branch  6 taken 7
+branch  7 taken 2 (fallthrough)
+        -:   69:        {
+        7:   70:            ++line_number;
+        7:   71:            current_line = strip_trailing_carriage_return(current_line);
+call    0 returned 7
+branch  1 taken 7 (fallthrough)
+branch  2 taken 0 (throw)
+call    3 returned 7
+call    4 returned 7
+call    5 returned 7
+call    6 returned 7
+        -:   72:
+        7:   73:            if (trim_whitespace(current_line).empty())
+call    0 returned 7
+branch  1 taken 7 (fallthrough)
+branch  2 taken 0 (throw)
+call    3 returned 7
+call    4 returned 7
+branch  5 taken 1 (fallthrough)
+branch  6 taken 6
+        -:   74:            {
+        1:   75:                continue;
+        -:   76:            }
+        -:   77:
+        6:   78:            istringstream line_stream(current_line);
+call    0 returned 6
+branch  1 taken 6 (fallthrough)
+branch  2 taken 0 (throw)
+        6:   79:            string time_step;
+call    0 returned 6
+        6:   80:            string job_token;
+call    0 returned 6
+        6:   81:            if (!(line_stream >> time_step >> job_token))
+call    0 returned 6
+branch  1 taken 6 (fallthrough)
+branch  2 taken 0 (throw)
+call    3 returned 6
+branch  4 taken 6 (fallthrough)
+branch  5 taken 0 (throw)
+call    6 returned 6
+branch  7 taken 6 (fallthrough)
+branch  8 taken 0 (throw)
+branch  9 taken 1 (fallthrough)
+branch 10 taken 5
+        -:   82:            {
+        2:   83:                throw runtime_error("row " + to_string(line_number) +
+call    0 returned 1
+branch  1 taken 1 (fallthrough)
+branch  2 taken 0 (throw)
+call    3 returned 1
+branch  4 taken 1 (fallthrough)
+branch  5 taken 0 (throw)
+call    6 returned 1
+call    7 returned 1
+call    8 returned 1
+call    9 never executed
+call   10 never executed
+call   11 never executed
+        3:   84:                                    " is missing a timestamp or job identifier");
+call    0 returned 1
+call    1 returned 1
+branch  2 taken 1 (fallthrough)
+branch  3 taken 0 (throw)
+call    4 returned 1
+branch  5 taken 1 (fallthrough)
+branch  6 taken 0 (throw)
+call    7 returned 1
+call    8 never executed
+        -:   85:            }
+        -:   86:
+        5:   87:            if (allowed_jobs.find(job_token) != allowed_jobs.end())
+call    0 returned 5
+branch  1 taken 5 (fallthrough)
+branch  2 taken 0 (throw)
+call    3 returned 5
+call    4 returned 5
+branch  5 taken 3 (fallthrough)
+branch  6 taken 2
+        -:   88:            {
+        3:   89:                output_file << current_line << '\n';
+call    0 returned 3
+branch  1 taken 3 (fallthrough)
+branch  2 taken 0 (throw)
+call    3 returned 3
+branch  4 taken 3 (fallthrough)
+branch  5 taken 0 (throw)
+        -:   90:            }
+        8:   91:        }
+call    0 returned 5
+call    1 returned 5
+call    2 returned 5
+call    3 returned 1
+call    4 returned 1
+call    5 returned 1
+       12:   92:    }
+call    0 returned 2
+call    1 returned 2
+call    2 returned 2
+call    3 returned 2
+call    4 returned 1
+call    5 returned 2
+call    6 returned 3
+call    7 returned 4
+        -:   93:
+        -:   94:} // namespace filter_by_job
