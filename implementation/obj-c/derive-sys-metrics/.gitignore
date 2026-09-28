@@ -1,0 +1,5 @@
+derive-sys-metrics
+.test-build/
+*.gcda
+*.gcno
+*.gcov
