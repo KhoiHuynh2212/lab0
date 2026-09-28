@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Launcher for the Python plot-use tool.
+set -euo pipefail
+
+SCRIPT_DIRECTORY="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+exec python3 "$SCRIPT_DIRECTORY/plot_use.py" "$@"
