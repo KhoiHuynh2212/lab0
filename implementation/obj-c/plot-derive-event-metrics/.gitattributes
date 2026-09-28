@@ -1,0 +1,6 @@
+*.sh text eol=lf
+Makefile text eol=lf
+*.csv text eol=lf
+*.log text eol=lf
+plot-derive-event-metrics text eol=lf
+*.py text eol=lf
