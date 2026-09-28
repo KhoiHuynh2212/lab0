@@ -6,7 +6,7 @@
 - [ ] Create working implementation [`./implementation/obj-c/filter-by-job/`](/implementation/obj-c/filter-by-job/)
 - [ ] Create working implementation [`./implementation/obj-c/compute-use/`](/implementation/obj-c/compute-use/)
 - [ ] Create working implementation [`./implementation/obj-c/plot-use`](/implementation/obj-c/plot-use)
-- [x] Create working implementation [`./implementation/obj-c/derive-sys-metrics`](/implementation/obj-c/derive-sys-metrics)
+- [ ] Create working implementation [`./implementation/obj-c/derive-sys-metrics`](/implementation/obj-c/derive-sys-metrics)
 - [ ] Create working implementation [`./implementation/obj-c/plot-sys-metrics/`](/implementation/obj-c/plot-sys-metrics/)
 - [ ] Create working implementation [`./implementation/obj-c/derive-event-metrics/`](/implementation/obj-c/derive-event-metrics/)
 - [ ] Create working implementation [`./implementation/obj-c/plot-derive-event-metrics`](/implementation/obj-c/plot-derive-event-metrics)

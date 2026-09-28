@@ -1,0 +1,1312 @@
+        -:    0:Source:/usr/include/c++/13/fstream
+        -:    0:Graph:tests-filter-by-job-filter_by_job.gcno
+        -:    0:Data:tests-filter-by-job-filter_by_job.gcda
+        -:    0:Runs:1
+        -:    1:// File based streams -*- C++ -*-
+        -:    2:
+        -:    3:// Copyright (C) 1997-2023 Free Software Foundation, Inc.
+        -:    4://
+        -:    5:// This file is part of the GNU ISO C++ Library.  This library is free
+        -:    6:// software; you can redistribute it and/or modify it under the
+        -:    7:// terms of the GNU General Public License as published by the
+        -:    8:// Free Software Foundation; either version 3, or (at your option)
+        -:    9:// any later version.
+        -:   10:
+        -:   11:// This library is distributed in the hope that it will be useful,
+        -:   12:// but WITHOUT ANY WARRANTY; without even the implied warranty of
+        -:   13:// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        -:   14:// GNU General Public License for more details.
+        -:   15:
+        -:   16:// Under Section 7 of GPL version 3, you are granted additional
+        -:   17:// permissions described in the GCC Runtime Library Exception, version
+        -:   18:// 3.1, as published by the Free Software Foundation.
+        -:   19:
+        -:   20:// You should have received a copy of the GNU General Public License and
+        -:   21:// a copy of the GCC Runtime Library Exception along with this program;
+        -:   22:// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+        -:   23:// <http://www.gnu.org/licenses/>.
+        -:   24:
+        -:   25:/** @file include/fstream
+        -:   26: *  This is a Standard C++ Library header.
+        -:   27: */
+        -:   28:
+        -:   29://
+        -:   30:// ISO C++ 14882: 27.8  File-based streams
+        -:   31://
+        -:   32:
+        -:   33:#ifndef _GLIBCXX_FSTREAM
+        -:   34:#define _GLIBCXX_FSTREAM 1
+        -:   35:
+        -:   36:#pragma GCC system_header
+        -:   37:
+        -:   38:#include <bits/requires_hosted.h> // iostreams
+        -:   39:
+        -:   40:#include <istream>
+        -:   41:#include <ostream>
+        -:   42:#include <bits/codecvt.h>
+        -:   43:#include <cstdio>             // For BUFSIZ
+        -:   44:#include <bits/basic_file.h>  // For __basic_file, __c_lock
+        -:   45:#if __cplusplus >= 201103L
+        -:   46:#include <string>             // For std::string overloads.
+        -:   47:#endif
+        -:   48:
+        -:   49:// This can be overridden by the target's os_defines.h
+        -:   50:#ifndef _GLIBCXX_BUFSIZ
+        -:   51:# define _GLIBCXX_BUFSIZ BUFSIZ
+        -:   52:#endif
+        -:   53:
+        -:   54:namespace std _GLIBCXX_VISIBILITY(default)
+        -:   55:{
+        -:   56:_GLIBCXX_BEGIN_NAMESPACE_VERSION
+        -:   57:
+        -:   58:#if __cplusplus >= 201703L
+        -:   59:  // Enable if _Path is a filesystem::path or experimental::filesystem::path
+        -:   60:  template<typename _Path, typename _Result = _Path, typename _Path2
+        -:   61:	   = decltype(std::declval<_Path&>().make_preferred().filename())>
+        -:   62:    using _If_fs_path = enable_if_t<is_same_v<_Path, _Path2>, _Result>;
+        -:   63:#endif // C++17
+        -:   64:
+        -:   65:
+        -:   66:  // [27.8.1.1] template class basic_filebuf
+        -:   67:  /**
+        -:   68:   *  @brief  The actual work of input and output (for files).
+        -:   69:   *  @ingroup io
+        -:   70:   *
+        -:   71:   *  @tparam _CharT  Type of character stream.
+        -:   72:   *  @tparam _Traits  Traits for character type, defaults to
+        -:   73:   *                   char_traits<_CharT>.
+        -:   74:   *
+        -:   75:   *  This class associates both its input and output sequence with an
+        -:   76:   *  external disk file, and maintains a joint file position for both
+        -:   77:   *  sequences.  Many of its semantics are described in terms of similar
+        -:   78:   *  behavior in the Standard C Library's @c FILE streams.
+        -:   79:   *
+        -:   80:   *  Requirements on traits_type, specific to this class:
+        -:   81:   *  - traits_type::pos_type must be fpos<traits_type::state_type>
+        -:   82:   *  - traits_type::off_type must be streamoff
+        -:   83:   *  - traits_type::state_type must be Assignable and DefaultConstructible,
+        -:   84:   *  - traits_type::state_type() must be the initial state for codecvt.
+        -:   85:   */
+        -:   86:  template<typename _CharT, typename _Traits>
+        -:   87:    class basic_filebuf : public basic_streambuf<_CharT, _Traits>
+        -:   88:    {
+        -:   89:#if __cplusplus >= 201103L
+        -:   90:      template<typename _Tp>
+        -:   91:	using __chk_state = __and_<is_copy_assignable<_Tp>,
+        -:   92:				   is_copy_constructible<_Tp>,
+        -:   93:				   is_default_constructible<_Tp>>;
+        -:   94:
+        -:   95:      static_assert(__chk_state<typename _Traits::state_type>::value,
+        -:   96:		    "state_type must be CopyAssignable, CopyConstructible"
+        -:   97:		    " and DefaultConstructible");
+        -:   98:
+        -:   99:      static_assert(is_same<typename _Traits::pos_type,
+        -:  100:			    fpos<typename _Traits::state_type>>::value,
+        -:  101:		    "pos_type must be fpos<state_type>");
+        -:  102:#endif
+        -:  103:    public:
+        -:  104:      // Types:
+        -:  105:      typedef _CharT                     	        char_type;
+        -:  106:      typedef _Traits                    	        traits_type;
+        -:  107:      typedef typename traits_type::int_type 		int_type;
+        -:  108:      typedef typename traits_type::pos_type 		pos_type;
+        -:  109:      typedef typename traits_type::off_type 		off_type;
+        -:  110:
+        -:  111:      typedef basic_streambuf<char_type, traits_type>  	__streambuf_type;
+        -:  112:      typedef basic_filebuf<char_type, traits_type>     __filebuf_type;
+        -:  113:      typedef __basic_file<char>		        __file_type;
+        -:  114:      typedef typename traits_type::state_type          __state_type;
+        -:  115:      typedef codecvt<char_type, char, __state_type>    __codecvt_type;
+        -:  116:
+        -:  117:      friend class ios_base; // For sync_with_stdio.
+        -:  118:
+        -:  119:    protected:
+        -:  120:      // Data Members:
+        -:  121:      // MT lock inherited from libio or other low-level io library.
+        -:  122:      __c_lock          	_M_lock;
+        -:  123:
+        -:  124:      // External buffer.
+        -:  125:      __file_type 		_M_file;
+        -:  126:
+        -:  127:      /// Place to stash in || out || in | out settings for current filebuf.
+        -:  128:      ios_base::openmode 	_M_mode;
+        -:  129:
+        -:  130:      // Beginning state type for codecvt.
+        -:  131:      __state_type 		_M_state_beg;
+        -:  132:
+        -:  133:      // During output, the state that corresponds to pptr(),
+        -:  134:      // during input, the state that corresponds to egptr() and
+        -:  135:      // _M_ext_next.
+        -:  136:      __state_type		_M_state_cur;
+        -:  137:
+        -:  138:      // Not used for output. During input, the state that corresponds
+        -:  139:      // to eback() and _M_ext_buf.
+        -:  140:      __state_type		_M_state_last;
+        -:  141:
+        -:  142:      /// Pointer to the beginning of internal buffer.
+        -:  143:      char_type*		_M_buf;
+        -:  144:
+        -:  145:      /**
+        -:  146:       *  Actual size of internal buffer. This number is equal to the size
+        -:  147:       *  of the put area + 1 position, reserved for the overflow char of
+        -:  148:       *  a full area.
+        -:  149:       */
+        -:  150:      size_t			_M_buf_size;
+        -:  151:
+        -:  152:      // Set iff _M_buf is allocated memory from _M_allocate_internal_buffer.
+        -:  153:      bool			_M_buf_allocated;
+        -:  154:
+        -:  155:      /**
+        -:  156:       *  _M_reading == false && _M_writing == false for @b uncommitted mode;
+        -:  157:       *  _M_reading == true for @b read mode;
+        -:  158:       *  _M_writing == true for @b write mode;
+        -:  159:       *
+        -:  160:       *  NB: _M_reading == true && _M_writing == true is unused.
+        -:  161:       */
+        -:  162:      bool                      _M_reading;
+        -:  163:      bool                      _M_writing;
+        -:  164:
+        -:  165:      ///@{
+        -:  166:      /**
+        -:  167:       *  Necessary bits for putback buffer management.
+        -:  168:       *
+        -:  169:       *  @note pbacks of over one character are not currently supported.
+        -:  170:       */
+        -:  171:      char_type			_M_pback;
+        -:  172:      char_type*		_M_pback_cur_save;
+        -:  173:      char_type*		_M_pback_end_save;
+        -:  174:      bool			_M_pback_init;
+        -:  175:      ///@}
+        -:  176:
+        -:  177:      // Cached codecvt facet.
+        -:  178:      const __codecvt_type* 	_M_codecvt;
+        -:  179:
+        -:  180:      /**
+        -:  181:       *  Buffer for external characters. Used for input when
+        -:  182:       *  codecvt::always_noconv() == false. When valid, this corresponds
+        -:  183:       *  to eback().
+        -:  184:       */
+        -:  185:      char*			_M_ext_buf;
+        -:  186:
+        -:  187:      /**
+        -:  188:       *  Size of buffer held by _M_ext_buf.
+        -:  189:       */
+        -:  190:      streamsize		_M_ext_buf_size;
+        -:  191:
+        -:  192:      /**
+        -:  193:       *  Pointers into the buffer held by _M_ext_buf that delimit a
+        -:  194:       *  subsequence of bytes that have been read but not yet converted.
+        -:  195:       *  When valid, _M_ext_next corresponds to egptr().
+        -:  196:       */
+        -:  197:      const char*		_M_ext_next;
+        -:  198:      char*			_M_ext_end;
+        -:  199:
+        -:  200:      /**
+        -:  201:       *  Initializes pback buffers, and moves normal buffers to safety.
+        -:  202:       *  Assumptions:
+        -:  203:       *  _M_in_cur has already been moved back
+        -:  204:       */
+        -:  205:      void
+        -:  206:      _M_create_pback()
+        -:  207:      {
+        -:  208:	if (!_M_pback_init)
+        -:  209:	  {
+        -:  210:	    _M_pback_cur_save = this->gptr();
+        -:  211:	    _M_pback_end_save = this->egptr();
+        -:  212:	    this->setg(&_M_pback, &_M_pback, &_M_pback + 1);
+        -:  213:	    _M_pback_init = true;
+        -:  214:	  }
+        -:  215:      }
+        -:  216:
+        -:  217:      /**
+        -:  218:       *  Deactivates pback buffer contents, and restores normal buffer.
+        -:  219:       *  Assumptions:
+        -:  220:       *  The pback buffer has only moved forward.
+        -:  221:       */
+        -:  222:      void
+        -:  223:      _M_destroy_pback() throw()
+        -:  224:      {
+        -:  225:	if (_M_pback_init)
+        -:  226:	  {
+        -:  227:	    // Length _M_in_cur moved in the pback buffer.
+        -:  228:	    _M_pback_cur_save += this->gptr() != this->eback();
+        -:  229:	    this->setg(_M_buf, _M_pback_cur_save, _M_pback_end_save);
+        -:  230:	    _M_pback_init = false;
+        -:  231:	  }
+        -:  232:      }
+        -:  233:
+        -:  234:    public:
+        -:  235:      // Constructors/destructor:
+        -:  236:      /**
+        -:  237:       *  @brief  Does not open any files.
+        -:  238:       *
+        -:  239:       *  The default constructor initializes the parent class using its
+        -:  240:       *  own default ctor.
+        -:  241:       */
+        -:  242:      basic_filebuf();
+        -:  243:
+        -:  244:#if __cplusplus >= 201103L
+        -:  245:      basic_filebuf(const basic_filebuf&) = delete;
+        -:  246:      basic_filebuf(basic_filebuf&&);
+        -:  247:#endif
+        -:  248:
+        -:  249:      /**
+        -:  250:       *  @brief  The destructor closes the file first.
+        -:  251:       */
+        -:  252:      virtual
+        -:  253:      ~basic_filebuf()
+        -:  254:      {
+        -:  255:	__try
+        -:  256:	  { this->close(); }
+        -:  257:	__catch(...)
+        -:  258:	  { }
+        -:  259:      }
+        -:  260:
+        -:  261:#if __cplusplus >= 201103L
+        -:  262:      basic_filebuf& operator=(const basic_filebuf&) = delete;
+        -:  263:      basic_filebuf& operator=(basic_filebuf&&);
+        -:  264:      void swap(basic_filebuf&);
+        -:  265:#endif
+        -:  266:
+        -:  267:      // Members:
+        -:  268:      /**
+        -:  269:       *  @brief  Returns true if the external file is open.
+        -:  270:       */
+        -:  271:      bool
+        -:  272:      is_open() const throw()
+        -:  273:      { return _M_file.is_open(); }
+        -:  274:
+        -:  275:      /**
+        -:  276:       *  @brief  Opens an external file.
+        -:  277:       *  @param  __s  The name of the file.
+        -:  278:       *  @param  __mode  The open mode flags.
+        -:  279:       *  @return  @c this on success, NULL on failure
+        -:  280:       *
+        -:  281:       *  If a file is already open, this function immediately fails.
+        -:  282:       *  Otherwise it tries to open the file named @a __s using the flags
+        -:  283:       *  given in @a __mode.
+        -:  284:       *
+        -:  285:       *  Table 92, adapted here, gives the relation between openmode
+        -:  286:       *  combinations and the equivalent @c fopen() flags.
+        -:  287:       *  (NB: lines app, in|out|app, in|app, binary|app, binary|in|out|app,
+        -:  288:       *  and binary|in|app per DR 596)
+        -:  289:       *  <pre>
+        -:  290:       *  +---------------------------------------------------------+
+        -:  291:       *  | ios_base Flag combination            stdio equivalent   |
+        -:  292:       *  |binary  in  out  trunc  app                              |
+        -:  293:       *  +---------------------------------------------------------+
+        -:  294:       *  |             +                        w                  |
+        -:  295:       *  |             +           +            a                  |
+        -:  296:       *  |                         +            a                  |
+        -:  297:       *  |             +     +                  w                  |
+        -:  298:       *  |         +                            r                  |
+        -:  299:       *  |         +   +                        r+                 |
+        -:  300:       *  |         +   +     +                  w+                 |
+        -:  301:       *  |         +   +           +            a+                 |
+        -:  302:       *  |         +               +            a+                 |
+        -:  303:       *  +---------------------------------------------------------+
+        -:  304:       *  |   +         +                        wb                 |
+        -:  305:       *  |   +         +           +            ab                 |
+        -:  306:       *  |   +                     +            ab                 |
+        -:  307:       *  |   +         +     +                  wb                 |
+        -:  308:       *  |   +     +                            rb                 |
+        -:  309:       *  |   +     +   +                        r+b                |
+        -:  310:       *  |   +     +   +     +                  w+b                |
+        -:  311:       *  |   +     +   +           +            a+b                |
+        -:  312:       *  |   +     +               +            a+b                |
+        -:  313:       *  +---------------------------------------------------------+
+        -:  314:       *  </pre>
+        -:  315:       */
+        -:  316:      __filebuf_type*
+        -:  317:      open(const char* __s, ios_base::openmode __mode);
+        -:  318:
+        -:  319:#if _GLIBCXX_HAVE__WFOPEN && _GLIBCXX_USE_WCHAR_T
+        -:  320:      /**
+        -:  321:       *  @brief  Opens an external file.
+        -:  322:       *  @param  __s  The name of the file, as a wide character string.
+        -:  323:       *  @param  __mode  The open mode flags.
+        -:  324:       *  @return  @c this on success, NULL on failure
+        -:  325:       */
+        -:  326:      __filebuf_type*
+        -:  327:      open(const wchar_t* __s, ios_base::openmode __mode);
+        -:  328:#endif
+        -:  329:
+        -:  330:#if __cplusplus >= 201103L
+        -:  331:      /**
+        -:  332:       *  @brief  Opens an external file.
+        -:  333:       *  @param  __s  The name of the file.
+        -:  334:       *  @param  __mode  The open mode flags.
+        -:  335:       *  @return  @c this on success, NULL on failure
+        -:  336:       */
+        -:  337:      __filebuf_type*
+        -:  338:      open(const std::string& __s, ios_base::openmode __mode)
+        -:  339:      { return open(__s.c_str(), __mode); }
+        -:  340:
+        -:  341:#if __cplusplus >= 201703L
+        -:  342:      /**
+        -:  343:       *  @brief  Opens an external file.
+        -:  344:       *  @param  __s  The name of the file, as a filesystem::path.
+        -:  345:       *  @param  __mode  The open mode flags.
+        -:  346:       *  @return  @c this on success, NULL on failure
+        -:  347:       */
+        -:  348:      template<typename _Path>
+        -:  349:	_If_fs_path<_Path, __filebuf_type*>
+        -:  350:	open(const _Path& __s, ios_base::openmode __mode)
+        -:  351:	{ return open(__s.c_str(), __mode); }
+        -:  352:#endif // C++17
+        -:  353:#endif // C++11
+        -:  354:
+        -:  355:      /**
+        -:  356:       *  @brief  Closes the currently associated file.
+        -:  357:       *  @return  @c this on success, NULL on failure
+        -:  358:       *
+        -:  359:       *  If no file is currently open, this function immediately fails.
+        -:  360:       *
+        -:  361:       *  If a <em>put buffer area</em> exists, @c overflow(eof) is
+        -:  362:       *  called to flush all the characters.  The file is then
+        -:  363:       *  closed.
+        -:  364:       *
+        -:  365:       *  If any operations fail, this function also fails.
+        -:  366:       */
+        -:  367:      __filebuf_type*
+        -:  368:      close();
+        -:  369:
+        -:  370:    protected:
+        -:  371:      void
+        -:  372:      _M_allocate_internal_buffer();
+        -:  373:
+        -:  374:      void
+        -:  375:      _M_destroy_internal_buffer() throw();
+        -:  376:
+        -:  377:      // [27.8.1.4] overridden virtual functions
+        -:  378:      virtual streamsize
+        -:  379:      showmanyc();
+        -:  380:
+        -:  381:      // Stroustrup, 1998, p. 628
+        -:  382:      // underflow() and uflow() functions are called to get the next
+        -:  383:      // character from the real input source when the buffer is empty.
+        -:  384:      // Buffered input uses underflow()
+        -:  385:
+        -:  386:      virtual int_type
+        -:  387:      underflow();
+        -:  388:
+        -:  389:      virtual int_type
+        -:  390:      pbackfail(int_type __c = _Traits::eof());
+        -:  391:
+        -:  392:      // Stroustrup, 1998, p 648
+        -:  393:      // The overflow() function is called to transfer characters to the
+        -:  394:      // real output destination when the buffer is full. A call to
+        -:  395:      // overflow(c) outputs the contents of the buffer plus the
+        -:  396:      // character c.
+        -:  397:      // 27.5.2.4.5
+        -:  398:      // Consume some sequence of the characters in the pending sequence.
+        -:  399:      virtual int_type
+        -:  400:      overflow(int_type __c = _Traits::eof());
+        -:  401:
+        -:  402:      // Convert internal byte sequence to external, char-based
+        -:  403:      // sequence via codecvt.
+        -:  404:      bool
+        -:  405:      _M_convert_to_external(char_type*, streamsize);
+        -:  406:
+        -:  407:      /**
+        -:  408:       *  @brief  Manipulates the buffer.
+        -:  409:       *  @param  __s  Pointer to a buffer area.
+        -:  410:       *  @param  __n  Size of @a __s.
+        -:  411:       *  @return  @c this
+        -:  412:       *
+        -:  413:       *  If no file has been opened, and both @a __s and @a __n are zero, then
+        -:  414:       *  the stream becomes unbuffered.  Otherwise, @c __s is used as a
+        -:  415:       *  buffer; see
+        -:  416:       *  https://gcc.gnu.org/onlinedocs/libstdc++/manual/streambufs.html#io.streambuf.buffering
+        -:  417:       *  for more.
+        -:  418:       */
+        -:  419:      virtual __streambuf_type*
+        -:  420:      setbuf(char_type* __s, streamsize __n);
+        -:  421:
+        -:  422:      virtual pos_type
+        -:  423:      seekoff(off_type __off, ios_base::seekdir __way,
+        -:  424:	      ios_base::openmode __mode = ios_base::in | ios_base::out);
+        -:  425:
+        -:  426:      virtual pos_type
+        -:  427:      seekpos(pos_type __pos,
+        -:  428:	      ios_base::openmode __mode = ios_base::in | ios_base::out);
+        -:  429:
+        -:  430:      // Common code for seekoff, seekpos, and overflow
+        -:  431:      pos_type
+        -:  432:      _M_seek(off_type __off, ios_base::seekdir __way, __state_type __state);
+        -:  433:
+        -:  434:      int
+        -:  435:      _M_get_ext_pos(__state_type &__state);
+        -:  436:
+        -:  437:      virtual int
+        -:  438:      sync();
+        -:  439:
+        -:  440:      virtual void
+        -:  441:      imbue(const locale& __loc);
+        -:  442:
+        -:  443:      virtual streamsize
+        -:  444:      xsgetn(char_type* __s, streamsize __n);
+        -:  445:
+        -:  446:      virtual streamsize
+        -:  447:      xsputn(const char_type* __s, streamsize __n);
+        -:  448:
+        -:  449:      // Flushes output buffer, then writes unshift sequence.
+        -:  450:      bool
+        -:  451:      _M_terminate_output();
+        -:  452:
+        -:  453:      /**
+        -:  454:       *  This function sets the pointers of the internal buffer, both get
+        -:  455:       *  and put areas. Typically:
+        -:  456:       *
+        -:  457:       *   __off == egptr() - eback() upon underflow/uflow (@b read mode);
+        -:  458:       *   __off == 0 upon overflow (@b write mode);
+        -:  459:       *   __off == -1 upon open, setbuf, seekoff/pos (@b uncommitted mode).
+        -:  460:       *
+        -:  461:       *  NB: epptr() - pbase() == _M_buf_size - 1, since _M_buf_size
+        -:  462:       *  reflects the actual allocated memory and the last cell is reserved
+        -:  463:       *  for the overflow char of a full put area.
+        -:  464:       */
+        -:  465:      void
+        -:  466:      _M_set_buffer(streamsize __off)
+        -:  467:      {
+        -:  468:	const bool __testin = _M_mode & ios_base::in;
+        -:  469:	const bool __testout = (_M_mode & ios_base::out
+        -:  470:				|| _M_mode & ios_base::app);
+        -:  471:
+        -:  472:	if (__testin && __off > 0)
+        -:  473:	  this->setg(_M_buf, _M_buf, _M_buf + __off);
+        -:  474:	else
+        -:  475:	  this->setg(_M_buf, _M_buf, _M_buf);
+        -:  476:
+        -:  477:	if (__testout && __off == 0 && _M_buf_size > 1 )
+        -:  478:	  this->setp(_M_buf, _M_buf + _M_buf_size - 1);
+        -:  479:	else
+        -:  480:	  this->setp(0, 0);
+        -:  481:      }
+        -:  482:    };
+        -:  483:
+        -:  484:  // [27.8.1.5] Template class basic_ifstream
+        -:  485:  /**
+        -:  486:   *  @brief  Controlling input for files.
+        -:  487:   *  @ingroup io
+        -:  488:   *
+        -:  489:   *  @tparam _CharT  Type of character stream.
+        -:  490:   *  @tparam _Traits  Traits for character type, defaults to
+        -:  491:   *                   char_traits<_CharT>.
+        -:  492:   *
+        -:  493:   *  This class supports reading from named files, using the inherited
+        -:  494:   *  functions from std::basic_istream.  To control the associated
+        -:  495:   *  sequence, an instance of std::basic_filebuf is used, which this page
+        -:  496:   *  refers to as @c sb.
+        -:  497:   */
+        -:  498:  template<typename _CharT, typename _Traits>
+        -:  499:    class basic_ifstream : public basic_istream<_CharT, _Traits>
+        -:  500:    {
+        -:  501:    public:
+        -:  502:      // Types:
+        -:  503:      typedef _CharT 					char_type;
+        -:  504:      typedef _Traits 					traits_type;
+        -:  505:      typedef typename traits_type::int_type 		int_type;
+        -:  506:      typedef typename traits_type::pos_type 		pos_type;
+        -:  507:      typedef typename traits_type::off_type 		off_type;
+        -:  508:
+        -:  509:      // Non-standard types:
+        -:  510:      typedef basic_filebuf<char_type, traits_type> 	__filebuf_type;
+        -:  511:      typedef basic_istream<char_type, traits_type>	__istream_type;
+        -:  512:
+        -:  513:    private:
+        -:  514:      __filebuf_type	_M_filebuf;
+        -:  515:
+        -:  516:    public:
+        -:  517:      // Constructors/Destructors:
+        -:  518:      /**
+        -:  519:       *  @brief  Default constructor.
+        -:  520:       *
+        -:  521:       *  Initializes @c sb using its default constructor, and passes
+        -:  522:       *  @c &sb to the base class initializer.  Does not open any files
+        -:  523:       *  (you haven't given it a filename to open).
+        -:  524:       */
+        -:  525:      basic_ifstream() : __istream_type(), _M_filebuf()
+        -:  526:      { this->init(&_M_filebuf); }
+        -:  527:
+        -:  528:      /**
+        -:  529:       *  @brief  Create an input file stream.
+        -:  530:       *  @param  __s  Null terminated string specifying the filename.
+        -:  531:       *  @param  __mode  Open file in specified mode (see std::ios_base).
+        -:  532:       *
+        -:  533:       *  @c ios_base::in is automatically included in @a __mode.
+        -:  534:       */
+        -:  535:      explicit
+        -:  536:      basic_ifstream(const char* __s, ios_base::openmode __mode = ios_base::in)
+        -:  537:      : __istream_type(), _M_filebuf()
+        -:  538:      {
+        -:  539:	this->init(&_M_filebuf);
+        -:  540:	this->open(__s, __mode);
+        -:  541:      }
+        -:  542:
+        -:  543:#if _GLIBCXX_HAVE__WFOPEN && _GLIBCXX_USE_WCHAR_T
+        -:  544:      /**
+        -:  545:       *  @param  Create an input file stream.
+        -:  546:       *  @param  __s  Wide string specifying the filename.
+        -:  547:       *  @param  __mode  Open file in specified mode (see std::ios_base).
+        -:  548:       *
+        -:  549:       *  @c ios_base::in is automatically included in @a __mode.
+        -:  550:       */
+        -:  551:      basic_ifstream(const wchar_t* __s,
+        -:  552:		     ios_base::openmode __mode = ios_base::in)
+        -:  553:      : __istream_type(), _M_filebuf()
+        -:  554:      {
+        -:  555:	this->init(&_M_filebuf);
+        -:  556:	this->open(__s, __mode);
+        -:  557:      }
+        -:  558:#endif
+        -:  559:
+        -:  560:#if __cplusplus >= 201103L
+        -:  561:      /**
+        -:  562:       *  @brief  Create an input file stream.
+        -:  563:       *  @param  __s  std::string specifying the filename.
+        -:  564:       *  @param  __mode  Open file in specified mode (see std::ios_base).
+        -:  565:       *
+        -:  566:       *  @c ios_base::in is automatically included in @a __mode.
+        -:  567:       */
+        -:  568:      explicit
+        -:  569:      basic_ifstream(const std::string& __s,
+        -:  570:		     ios_base::openmode __mode = ios_base::in)
+        -:  571:      : __istream_type(), _M_filebuf()
+        -:  572:      {
+        -:  573:	this->init(&_M_filebuf);
+        -:  574:	this->open(__s, __mode);
+        -:  575:      }
+        -:  576:
+        -:  577:#if __cplusplus >= 201703L
+        -:  578:      /**
+        -:  579:       *  @brief  Create an input file stream.
+        -:  580:       *  @param  __s  filesystem::path specifying the filename.
+        -:  581:       *  @param  __mode  Open file in specified mode (see std::ios_base).
+        -:  582:       *
+        -:  583:       *  @c ios_base::in is automatically included in @a __mode.
+        -:  584:       */
+        -:  585:      template<typename _Path, typename _Require = _If_fs_path<_Path>>
+function _ZNSt14basic_ifstreamIcSt11char_traitsIcEEC1INSt10filesystem7__cxx114pathES6_EERKT_St13_Ios_Openmode called 0 returned 0% blocks executed 0%
+    #####:  586:	basic_ifstream(const _Path& __s,
+        -:  587:		       ios_base::openmode __mode = ios_base::in)
+    #####:  588:	: basic_ifstream(__s.c_str(), __mode)
+call    0 never executed
+call    1 never executed
+    #####:  589:	{ }
+        -:  590:#endif // C++17
+        -:  591:
+        -:  592:      basic_ifstream(const basic_ifstream&) = delete;
+        -:  593:
+        -:  594:      basic_ifstream(basic_ifstream&& __rhs)
+        -:  595:      : __istream_type(std::move(__rhs)),
+        -:  596:      _M_filebuf(std::move(__rhs._M_filebuf))
+        -:  597:      { __istream_type::set_rdbuf(&_M_filebuf); }
+        -:  598:#endif // C++11
+        -:  599:
+        -:  600:      /**
+        -:  601:       *  @brief  The destructor does nothing.
+        -:  602:       *
+        -:  603:       *  The file is closed by the filebuf object, not the formatting
+        -:  604:       *  stream.
+        -:  605:       */
+        -:  606:      ~basic_ifstream()
+        -:  607:      { }
+        -:  608:
+        -:  609:#if __cplusplus >= 201103L
+        -:  610:      // 27.8.3.2 Assign and swap:
+        -:  611:
+        -:  612:      basic_ifstream&
+        -:  613:      operator=(const basic_ifstream&) = delete;
+        -:  614:
+        -:  615:      basic_ifstream&
+        -:  616:      operator=(basic_ifstream&& __rhs)
+        -:  617:      {
+        -:  618:	__istream_type::operator=(std::move(__rhs));
+        -:  619:	_M_filebuf = std::move(__rhs._M_filebuf);
+        -:  620:	return *this;
+        -:  621:      }
+        -:  622:
+        -:  623:      void
+        -:  624:      swap(basic_ifstream& __rhs)
+        -:  625:      {
+        -:  626:	__istream_type::swap(__rhs);
+        -:  627:	_M_filebuf.swap(__rhs._M_filebuf);
+        -:  628:      }
+        -:  629:#endif
+        -:  630:
+        -:  631:      // Members:
+        -:  632:      /**
+        -:  633:       *  @brief  Accessing the underlying buffer.
+        -:  634:       *  @return  The current basic_filebuf buffer.
+        -:  635:       *
+        -:  636:       *  This hides both signatures of std::basic_ios::rdbuf().
+        -:  637:       */
+        -:  638:      __filebuf_type*
+        -:  639:      rdbuf() const
+        -:  640:      { return const_cast<__filebuf_type*>(&_M_filebuf); }
+        -:  641:
+        -:  642:      /**
+        -:  643:       *  @brief  Wrapper to test for an open file.
+        -:  644:       *  @return  @c rdbuf()->is_open()
+        -:  645:       */
+        -:  646:      bool
+        -:  647:      is_open()
+        -:  648:      { return _M_filebuf.is_open(); }
+        -:  649:
+        -:  650:      // _GLIBCXX_RESOLVE_LIB_DEFECTS
+        -:  651:      // 365. Lack of const-qualification in clause 27
+        -:  652:      bool
+        -:  653:      is_open() const
+        -:  654:      { return _M_filebuf.is_open(); }
+        -:  655:
+        -:  656:      /**
+        -:  657:       *  @brief  Opens an external file.
+        -:  658:       *  @param  __s  The name of the file.
+        -:  659:       *  @param  __mode  The open mode flags.
+        -:  660:       *
+        -:  661:       *  Calls @c std::basic_filebuf::open(s,__mode|in).  If that function
+        -:  662:       *  fails, @c failbit is set in the stream's error state.
+        -:  663:       */
+        -:  664:      void
+        -:  665:      open(const char* __s, ios_base::openmode __mode = ios_base::in)
+        -:  666:      {
+        -:  667:	if (!_M_filebuf.open(__s, __mode | ios_base::in))
+        -:  668:	  this->setstate(ios_base::failbit);
+        -:  669:	else
+        -:  670:	  // _GLIBCXX_RESOLVE_LIB_DEFECTS
+        -:  671:	  // 409. Closing an fstream should clear error state
+        -:  672:	  this->clear();
+        -:  673:      }
+        -:  674:
+        -:  675:#if _GLIBCXX_HAVE__WFOPEN && _GLIBCXX_USE_WCHAR_T
+        -:  676:      /**
+        -:  677:       *  @brief  Opens an external file.
+        -:  678:       *  @param  __s  The name of the file, as a wide character string.
+        -:  679:       *  @param  __mode  The open mode flags.
+        -:  680:       *
+        -:  681:       *  Calls @c std::basic_filebuf::open(__s,__mode|in).  If that function
+        -:  682:       *  fails, @c failbit is set in the stream's error state.
+        -:  683:       */
+        -:  684:      void
+        -:  685:      open(const wchar_t* __s, ios_base::openmode __mode = ios_base::in)
+        -:  686:      {
+        -:  687:	if (!_M_filebuf.open(__s, __mode | ios_base::in))
+        -:  688:	  this->setstate(ios_base::failbit);
+        -:  689:	else
+        -:  690:	  this->clear();
+        -:  691:      }
+        -:  692:#endif
+        -:  693:
+        -:  694:#if __cplusplus >= 201103L
+        -:  695:      /**
+        -:  696:       *  @brief  Opens an external file.
+        -:  697:       *  @param  __s  The name of the file.
+        -:  698:       *  @param  __mode  The open mode flags.
+        -:  699:       *
+        -:  700:       *  Calls @c std::basic_filebuf::open(__s,__mode|in).  If that function
+        -:  701:       *  fails, @c failbit is set in the stream's error state.
+        -:  702:       */
+        -:  703:      void
+        -:  704:      open(const std::string& __s, ios_base::openmode __mode = ios_base::in)
+        -:  705:      {
+        -:  706:	if (!_M_filebuf.open(__s, __mode | ios_base::in))
+        -:  707:	  this->setstate(ios_base::failbit);
+        -:  708:	else
+        -:  709:	  // _GLIBCXX_RESOLVE_LIB_DEFECTS
+        -:  710:	  // 409. Closing an fstream should clear error state
+        -:  711:	  this->clear();
+        -:  712:      }
+        -:  713:
+        -:  714:#if __cplusplus >= 201703L
+        -:  715:      /**
+        -:  716:       *  @brief  Opens an external file.
+        -:  717:       *  @param  __s  The name of the file, as a filesystem::path.
+        -:  718:       *  @param  __mode  The open mode flags.
+        -:  719:       *
+        -:  720:       *  Calls @c std::basic_filebuf::open(__s,__mode|in).  If that function
+        -:  721:       *  fails, @c failbit is set in the stream's error state.
+        -:  722:       */
+        -:  723:      template<typename _Path>
+        -:  724:	_If_fs_path<_Path, void>
+        -:  725:	open(const _Path& __s, ios_base::openmode __mode = ios_base::in)
+        -:  726:	{ open(__s.c_str(), __mode); }
+        -:  727:#endif // C++17
+        -:  728:#endif // C++11
+        -:  729:
+        -:  730:      /**
+        -:  731:       *  @brief  Close the file.
+        -:  732:       *
+        -:  733:       *  Calls @c std::basic_filebuf::close().  If that function
+        -:  734:       *  fails, @c failbit is set in the stream's error state.
+        -:  735:       */
+        -:  736:      void
+        -:  737:      close()
+        -:  738:      {
+        -:  739:	if (!_M_filebuf.close())
+        -:  740:	  this->setstate(ios_base::failbit);
+        -:  741:      }
+        -:  742:    };
+        -:  743:
+        -:  744:
+        -:  745:  // [27.8.1.8] Template class basic_ofstream
+        -:  746:  /**
+        -:  747:   *  @brief  Controlling output for files.
+        -:  748:   *  @ingroup io
+        -:  749:   *
+        -:  750:   *  @tparam _CharT  Type of character stream.
+        -:  751:   *  @tparam _Traits  Traits for character type, defaults to
+        -:  752:   *                   char_traits<_CharT>.
+        -:  753:   *
+        -:  754:   *  This class supports reading from named files, using the inherited
+        -:  755:   *  functions from std::basic_ostream.  To control the associated
+        -:  756:   *  sequence, an instance of std::basic_filebuf is used, which this page
+        -:  757:   *  refers to as @c sb.
+        -:  758:   */
+        -:  759:  template<typename _CharT, typename _Traits>
+        -:  760:    class basic_ofstream : public basic_ostream<_CharT,_Traits>
+        -:  761:    {
+        -:  762:    public:
+        -:  763:      // Types:
+        -:  764:      typedef _CharT 					char_type;
+        -:  765:      typedef _Traits 					traits_type;
+        -:  766:      typedef typename traits_type::int_type 		int_type;
+        -:  767:      typedef typename traits_type::pos_type 		pos_type;
+        -:  768:      typedef typename traits_type::off_type 		off_type;
+        -:  769:
+        -:  770:      // Non-standard types:
+        -:  771:      typedef basic_filebuf<char_type, traits_type> 	__filebuf_type;
+        -:  772:      typedef basic_ostream<char_type, traits_type>	__ostream_type;
+        -:  773:
+        -:  774:    private:
+        -:  775:      __filebuf_type	_M_filebuf;
+        -:  776:
+        -:  777:    public:
+        -:  778:      // Constructors:
+        -:  779:      /**
+        -:  780:       *  @brief  Default constructor.
+        -:  781:       *
+        -:  782:       *  Initializes @c sb using its default constructor, and passes
+        -:  783:       *  @c &sb to the base class initializer.  Does not open any files
+        -:  784:       *  (you haven't given it a filename to open).
+        -:  785:       */
+        -:  786:      basic_ofstream(): __ostream_type(), _M_filebuf()
+        -:  787:      { this->init(&_M_filebuf); }
+        -:  788:
+        -:  789:      /**
+        -:  790:       *  @brief  Create an output file stream.
+        -:  791:       *  @param  __s  Null terminated string specifying the filename.
+        -:  792:       *  @param  __mode  Open file in specified mode (see std::ios_base).
+        -:  793:       *
+        -:  794:       *  @c ios_base::out is automatically included in @a __mode.
+        -:  795:       */
+        -:  796:      explicit
+        -:  797:      basic_ofstream(const char* __s,
+        -:  798:		     ios_base::openmode __mode = ios_base::out)
+        -:  799:      : __ostream_type(), _M_filebuf()
+        -:  800:      {
+        -:  801:	this->init(&_M_filebuf);
+        -:  802:	this->open(__s, __mode);
+        -:  803:      }
+        -:  804:
+        -:  805:#if _GLIBCXX_HAVE__WFOPEN && _GLIBCXX_USE_WCHAR_T
+        -:  806:      /**
+        -:  807:       *  @param  Create an output file stream.
+        -:  808:       *  @param  __s  Wide string specifying the filename.
+        -:  809:       *  @param  __mode  Open file in specified mode (see std::ios_base).
+        -:  810:       *
+        -:  811:       *  @c ios_base::out | @c ios_base::trunc is automatically included in
+        -:  812:       *  @a __mode.
+        -:  813:       */
+        -:  814:      basic_ofstream(const wchar_t* __s,
+        -:  815:		     ios_base::openmode __mode = ios_base::out|ios_base::trunc)
+        -:  816:      : __ostream_type(), _M_filebuf()
+        -:  817:      {
+        -:  818:	this->init(&_M_filebuf);
+        -:  819:	this->open(__s, __mode);
+        -:  820:      }
+        -:  821:#endif
+        -:  822:
+        -:  823:#if __cplusplus >= 201103L
+        -:  824:      /**
+        -:  825:       *  @brief  Create an output file stream.
+        -:  826:       *  @param  __s  std::string specifying the filename.
+        -:  827:       *  @param  __mode  Open file in specified mode (see std::ios_base).
+        -:  828:       *
+        -:  829:       *  @c ios_base::out is automatically included in @a __mode.
+        -:  830:       */
+        -:  831:      explicit
+        -:  832:      basic_ofstream(const std::string& __s,
+        -:  833:		     ios_base::openmode __mode = ios_base::out)
+        -:  834:      : __ostream_type(), _M_filebuf()
+        -:  835:      {
+        -:  836:	this->init(&_M_filebuf);
+        -:  837:	this->open(__s, __mode);
+        -:  838:      }
+        -:  839:
+        -:  840:#if __cplusplus >= 201703L
+        -:  841:      /**
+        -:  842:       *  @brief  Create an output file stream.
+        -:  843:       *  @param  __s  filesystem::path specifying the filename.
+        -:  844:       *  @param  __mode  Open file in specified mode (see std::ios_base).
+        -:  845:       *
+        -:  846:       *  @c ios_base::out is automatically included in @a __mode.
+        -:  847:       */
+        -:  848:      template<typename _Path, typename _Require = _If_fs_path<_Path>>
+function _ZNSt14basic_ofstreamIcSt11char_traitsIcEEC1INSt10filesystem7__cxx114pathES6_EERKT_St13_Ios_Openmode called 0 returned 0% blocks executed 0%
+    #####:  849:	basic_ofstream(const _Path& __s,
+        -:  850:		       ios_base::openmode __mode = ios_base::out)
+    #####:  851:	: basic_ofstream(__s.c_str(), __mode)
+call    0 never executed
+call    1 never executed
+    #####:  852:	{ }
+        -:  853:#endif // C++17
+        -:  854:
+        -:  855:      basic_ofstream(const basic_ofstream&) = delete;
+        -:  856:
+        -:  857:      basic_ofstream(basic_ofstream&& __rhs)
+        -:  858:      : __ostream_type(std::move(__rhs)),
+        -:  859:      _M_filebuf(std::move(__rhs._M_filebuf))
+        -:  860:      { __ostream_type::set_rdbuf(&_M_filebuf); }
+        -:  861:#endif
+        -:  862:
+        -:  863:      /**
+        -:  864:       *  @brief  The destructor does nothing.
+        -:  865:       *
+        -:  866:       *  The file is closed by the filebuf object, not the formatting
+        -:  867:       *  stream.
+        -:  868:       */
+        -:  869:      ~basic_ofstream()
+        -:  870:      { }
+        -:  871:
+        -:  872:#if __cplusplus >= 201103L
+        -:  873:      // 27.8.3.2 Assign and swap:
+        -:  874:
+        -:  875:      basic_ofstream&
+        -:  876:      operator=(const basic_ofstream&) = delete;
+        -:  877:
+        -:  878:      basic_ofstream&
+        -:  879:      operator=(basic_ofstream&& __rhs)
+        -:  880:      {
+        -:  881:	__ostream_type::operator=(std::move(__rhs));
+        -:  882:	_M_filebuf = std::move(__rhs._M_filebuf);
+        -:  883:	return *this;
+        -:  884:      }
+        -:  885:
+        -:  886:      void
+        -:  887:      swap(basic_ofstream& __rhs)
+        -:  888:      {
+        -:  889:	__ostream_type::swap(__rhs);
+        -:  890:	_M_filebuf.swap(__rhs._M_filebuf);
+        -:  891:      }
+        -:  892:#endif
+        -:  893:
+        -:  894:      // Members:
+        -:  895:      /**
+        -:  896:       *  @brief  Accessing the underlying buffer.
+        -:  897:       *  @return  The current basic_filebuf buffer.
+        -:  898:       *
+        -:  899:       *  This hides both signatures of std::basic_ios::rdbuf().
+        -:  900:       */
+        -:  901:      __filebuf_type*
+        -:  902:      rdbuf() const
+        -:  903:      { return const_cast<__filebuf_type*>(&_M_filebuf); }
+        -:  904:
+        -:  905:      /**
+        -:  906:       *  @brief  Wrapper to test for an open file.
+        -:  907:       *  @return  @c rdbuf()->is_open()
+        -:  908:       */
+        -:  909:      bool
+        -:  910:      is_open()
+        -:  911:      { return _M_filebuf.is_open(); }
+        -:  912:
+        -:  913:      // _GLIBCXX_RESOLVE_LIB_DEFECTS
+        -:  914:      // 365. Lack of const-qualification in clause 27
+        -:  915:      bool
+        -:  916:      is_open() const
+        -:  917:      { return _M_filebuf.is_open(); }
+        -:  918:
+        -:  919:      /**
+        -:  920:       *  @brief  Opens an external file.
+        -:  921:       *  @param  __s  The name of the file.
+        -:  922:       *  @param  __mode  The open mode flags.
+        -:  923:       *
+        -:  924:       *  Calls @c std::basic_filebuf::open(__s,__mode|out).  If that
+        -:  925:       *  function fails, @c failbit is set in the stream's error state.
+        -:  926:       */
+        -:  927:      void
+        -:  928:      open(const char* __s, ios_base::openmode __mode = ios_base::out)
+        -:  929:      {
+        -:  930:	if (!_M_filebuf.open(__s, __mode | ios_base::out))
+        -:  931:	  this->setstate(ios_base::failbit);
+        -:  932:	else
+        -:  933:	  // _GLIBCXX_RESOLVE_LIB_DEFECTS
+        -:  934:	  // 409. Closing an fstream should clear error state
+        -:  935:	  this->clear();
+        -:  936:      }
+        -:  937:
+        -:  938:#if _GLIBCXX_HAVE__WFOPEN && _GLIBCXX_USE_WCHAR_T
+        -:  939:      /**
+        -:  940:       *  @brief  Opens an external file.
+        -:  941:       *  @param  __s  The name of the file.
+        -:  942:       *  @param  __mode  The open mode flags.
+        -:  943:       *
+        -:  944:       *  Calls @c std::basic_filebuf::open(__s,__mode|out).  If that
+        -:  945:       *  function fails, @c failbit is set in the stream's error state.
+        -:  946:       */
+        -:  947:      void
+        -:  948:      open(const wchar_t* __s, ios_base::openmode __mode = ios_base::out)
+        -:  949:      {
+        -:  950:	if (!_M_filebuf.open(__s, __mode | ios_base::out))
+        -:  951:	  this->setstate(ios_base::failbit);
+        -:  952:	else
+        -:  953:	  this->clear();
+        -:  954:      }
+        -:  955:#endif
+        -:  956:
+        -:  957:#if __cplusplus >= 201103L
+        -:  958:      /**
+        -:  959:       *  @brief  Opens an external file.
+        -:  960:       *  @param  __s  The name of the file.
+        -:  961:       *  @param  __mode  The open mode flags.
+        -:  962:       *
+        -:  963:       *  Calls @c std::basic_filebuf::open(s,mode|out).  If that
+        -:  964:       *  function fails, @c failbit is set in the stream's error state.
+        -:  965:       */
+        -:  966:      void
+        -:  967:      open(const std::string& __s, ios_base::openmode __mode = ios_base::out)
+        -:  968:      {
+        -:  969:	if (!_M_filebuf.open(__s, __mode | ios_base::out))
+        -:  970:	  this->setstate(ios_base::failbit);
+        -:  971:	else
+        -:  972:	  // _GLIBCXX_RESOLVE_LIB_DEFECTS
+        -:  973:	  // 409. Closing an fstream should clear error state
+        -:  974:	  this->clear();
+        -:  975:      }
+        -:  976:
+        -:  977:#if __cplusplus >= 201703L
+        -:  978:      /**
+        -:  979:       *  @brief  Opens an external file.
+        -:  980:       *  @param  __s  The name of the file, as a filesystem::path.
+        -:  981:       *  @param  __mode  The open mode flags.
+        -:  982:       *
+        -:  983:       *  Calls @c std::basic_filebuf::open(__s,__mode|out).  If that
+        -:  984:       *  function fails, @c failbit is set in the stream's error state.
+        -:  985:       */
+        -:  986:      template<typename _Path>
+        -:  987:	_If_fs_path<_Path, void>
+        -:  988:	open(const _Path& __s, ios_base::openmode __mode = ios_base::out)
+        -:  989:	{ open(__s.c_str(), __mode); }
+        -:  990:#endif // C++17
+        -:  991:#endif // C++11
+        -:  992:
+        -:  993:      /**
+        -:  994:       *  @brief  Close the file.
+        -:  995:       *
+        -:  996:       *  Calls @c std::basic_filebuf::close().  If that function
+        -:  997:       *  fails, @c failbit is set in the stream's error state.
+        -:  998:       */
+        -:  999:      void
+        -: 1000:      close()
+        -: 1001:      {
+        -: 1002:	if (!_M_filebuf.close())
+        -: 1003:	  this->setstate(ios_base::failbit);
+        -: 1004:      }
+        -: 1005:    };
+        -: 1006:
+        -: 1007:
+        -: 1008:  // [27.8.1.11] Template class basic_fstream
+        -: 1009:  /**
+        -: 1010:   *  @brief  Controlling input and output for files.
+        -: 1011:   *  @ingroup io
+        -: 1012:   *
+        -: 1013:   *  @tparam _CharT  Type of character stream.
+        -: 1014:   *  @tparam _Traits  Traits for character type, defaults to
+        -: 1015:   *                   char_traits<_CharT>.
+        -: 1016:   *
+        -: 1017:   *  This class supports reading from and writing to named files, using
+        -: 1018:   *  the inherited functions from std::basic_iostream.  To control the
+        -: 1019:   *  associated sequence, an instance of std::basic_filebuf is used, which
+        -: 1020:   *  this page refers to as @c sb.
+        -: 1021:   */
+        -: 1022:  template<typename _CharT, typename _Traits>
+        -: 1023:    class basic_fstream : public basic_iostream<_CharT, _Traits>
+        -: 1024:    {
+        -: 1025:    public:
+        -: 1026:      // Types:
+        -: 1027:      typedef _CharT 					char_type;
+        -: 1028:      typedef _Traits 					traits_type;
+        -: 1029:      typedef typename traits_type::int_type 		int_type;
+        -: 1030:      typedef typename traits_type::pos_type 		pos_type;
+        -: 1031:      typedef typename traits_type::off_type 		off_type;
+        -: 1032:
+        -: 1033:      // Non-standard types:
+        -: 1034:      typedef basic_filebuf<char_type, traits_type> 	__filebuf_type;
+        -: 1035:      typedef basic_ios<char_type, traits_type>		__ios_type;
+        -: 1036:      typedef basic_iostream<char_type, traits_type>	__iostream_type;
+        -: 1037:
+        -: 1038:    private:
+        -: 1039:      __filebuf_type	_M_filebuf;
+        -: 1040:
+        -: 1041:    public:
+        -: 1042:      // Constructors/destructor:
+        -: 1043:      /**
+        -: 1044:       *  @brief  Default constructor.
+        -: 1045:       *
+        -: 1046:       *  Initializes @c sb using its default constructor, and passes
+        -: 1047:       *  @c &sb to the base class initializer.  Does not open any files
+        -: 1048:       *  (you haven't given it a filename to open).
+        -: 1049:       */
+        -: 1050:      basic_fstream()
+        -: 1051:      : __iostream_type(), _M_filebuf()
+        -: 1052:      { this->init(&_M_filebuf); }
+        -: 1053:
+        -: 1054:      /**
+        -: 1055:       *  @brief  Create an input/output file stream.
+        -: 1056:       *  @param  __s  Null terminated string specifying the filename.
+        -: 1057:       *  @param  __mode  Open file in specified mode (see std::ios_base).
+        -: 1058:       */
+        -: 1059:      explicit
+        -: 1060:      basic_fstream(const char* __s,
+        -: 1061:		    ios_base::openmode __mode = ios_base::in | ios_base::out)
+        -: 1062:      : __iostream_type(0), _M_filebuf()
+        -: 1063:      {
+        -: 1064:	this->init(&_M_filebuf);
+        -: 1065:	this->open(__s, __mode);
+        -: 1066:      }
+        -: 1067:
+        -: 1068:#if _GLIBCXX_HAVE__WFOPEN && _GLIBCXX_USE_WCHAR_T
+        -: 1069:      /**
+        -: 1070:       *  @param  Create an input/output file stream.
+        -: 1071:       *  @param  __s  Wide string specifying the filename.
+        -: 1072:       *  @param  __mode  Open file in specified mode (see std::ios_base).
+        -: 1073:       */
+        -: 1074:      basic_fstream(const wchar_t* __s,
+        -: 1075:		    ios_base::openmode __mode = ios_base::in | ios_base::out)
+        -: 1076:      : __iostream_type(0), _M_filebuf()
+        -: 1077:      {
+        -: 1078:	this->init(&_M_filebuf);
+        -: 1079:	this->open(__s, __mode);
+        -: 1080:      }
+        -: 1081:#endif
+        -: 1082:
+        -: 1083:#if __cplusplus >= 201103L
+        -: 1084:      /**
+        -: 1085:       *  @brief  Create an input/output file stream.
+        -: 1086:       *  @param  __s  Null terminated string specifying the filename.
+        -: 1087:       *  @param  __mode  Open file in specified mode (see std::ios_base).
+        -: 1088:       */
+        -: 1089:      explicit
+        -: 1090:      basic_fstream(const std::string& __s,
+        -: 1091:		    ios_base::openmode __mode = ios_base::in | ios_base::out)
+        -: 1092:      : __iostream_type(0), _M_filebuf()
+        -: 1093:      {
+        -: 1094:	this->init(&_M_filebuf);
+        -: 1095:	this->open(__s, __mode);
+        -: 1096:      }
+        -: 1097:
+        -: 1098:#if __cplusplus >= 201703L
+        -: 1099:      /**
+        -: 1100:       *  @brief  Create an input/output file stream.
+        -: 1101:       *  @param  __s  filesystem::path specifying the filename.
+        -: 1102:       *  @param  __mode  Open file in specified mode (see std::ios_base).
+        -: 1103:       */
+        -: 1104:      template<typename _Path, typename _Require = _If_fs_path<_Path>>
+        -: 1105:	basic_fstream(const _Path& __s,
+        -: 1106:		      ios_base::openmode __mode = ios_base::in | ios_base::out)
+        -: 1107:	: basic_fstream(__s.c_str(), __mode)
+        -: 1108:	{ }
+        -: 1109:#endif // C++17
+        -: 1110:
+        -: 1111:      basic_fstream(const basic_fstream&) = delete;
+        -: 1112:
+        -: 1113:      basic_fstream(basic_fstream&& __rhs)
+        -: 1114:      : __iostream_type(std::move(__rhs)),
+        -: 1115:      _M_filebuf(std::move(__rhs._M_filebuf))
+        -: 1116:      { __iostream_type::set_rdbuf(&_M_filebuf); }
+        -: 1117:#endif
+        -: 1118:
+        -: 1119:      /**
+        -: 1120:       *  @brief  The destructor does nothing.
+        -: 1121:       *
+        -: 1122:       *  The file is closed by the filebuf object, not the formatting
+        -: 1123:       *  stream.
+        -: 1124:       */
+        -: 1125:      ~basic_fstream()
+        -: 1126:      { }
+        -: 1127:
+        -: 1128:#if __cplusplus >= 201103L
+        -: 1129:      // 27.8.3.2 Assign and swap:
+        -: 1130:
+        -: 1131:      basic_fstream&
+        -: 1132:      operator=(const basic_fstream&) = delete;
+        -: 1133:
+        -: 1134:      basic_fstream&
+        -: 1135:      operator=(basic_fstream&& __rhs)
+        -: 1136:      {
+        -: 1137:	__iostream_type::operator=(std::move(__rhs));
+        -: 1138:	_M_filebuf = std::move(__rhs._M_filebuf);
+        -: 1139:	return *this;
+        -: 1140:      }
+        -: 1141:
+        -: 1142:      void
+        -: 1143:      swap(basic_fstream& __rhs)
+        -: 1144:      {
+        -: 1145:	__iostream_type::swap(__rhs);
+        -: 1146:	_M_filebuf.swap(__rhs._M_filebuf);
+        -: 1147:      }
+        -: 1148:#endif
+        -: 1149:
+        -: 1150:      // Members:
+        -: 1151:      /**
+        -: 1152:       *  @brief  Accessing the underlying buffer.
+        -: 1153:       *  @return  The current basic_filebuf buffer.
+        -: 1154:       *
+        -: 1155:       *  This hides both signatures of std::basic_ios::rdbuf().
+        -: 1156:       */
+        -: 1157:      __filebuf_type*
+        -: 1158:      rdbuf() const
+        -: 1159:      { return const_cast<__filebuf_type*>(&_M_filebuf); }
+        -: 1160:
+        -: 1161:      /**
+        -: 1162:       *  @brief  Wrapper to test for an open file.
+        -: 1163:       *  @return  @c rdbuf()->is_open()
+        -: 1164:       */
+        -: 1165:      bool
+        -: 1166:      is_open()
+        -: 1167:      { return _M_filebuf.is_open(); }
+        -: 1168:
+        -: 1169:      // _GLIBCXX_RESOLVE_LIB_DEFECTS
+        -: 1170:      // 365. Lack of const-qualification in clause 27
+        -: 1171:      bool
+        -: 1172:      is_open() const
+        -: 1173:      { return _M_filebuf.is_open(); }
+        -: 1174:
+        -: 1175:      /**
+        -: 1176:       *  @brief  Opens an external file.
+        -: 1177:       *  @param  __s  The name of the file.
+        -: 1178:       *  @param  __mode  The open mode flags.
+        -: 1179:       *
+        -: 1180:       *  Calls @c std::basic_filebuf::open(__s,__mode).  If that
+        -: 1181:       *  function fails, @c failbit is set in the stream's error state.
+        -: 1182:       */
+        -: 1183:      void
+        -: 1184:      open(const char* __s,
+        -: 1185:	   ios_base::openmode __mode = ios_base::in | ios_base::out)
+        -: 1186:      {
+        -: 1187:	if (!_M_filebuf.open(__s, __mode))
+        -: 1188:	  this->setstate(ios_base::failbit);
+        -: 1189:	else
+        -: 1190:	  // _GLIBCXX_RESOLVE_LIB_DEFECTS
+        -: 1191:	  // 409. Closing an fstream should clear error state
+        -: 1192:	  this->clear();
+        -: 1193:      }
+        -: 1194:
+        -: 1195:#if _GLIBCXX_HAVE__WFOPEN && _GLIBCXX_USE_WCHAR_T
+        -: 1196:      /**
+        -: 1197:       *  @brief  Opens an external file.
+        -: 1198:       *  @param  __s  The name of the file.
+        -: 1199:       *  @param  __mode  The open mode flags.
+        -: 1200:       *
+        -: 1201:       *  Calls @c std::basic_filebuf::open(__s,__mode).  If that
+        -: 1202:       *  function fails, @c failbit is set in the stream's error state.
+        -: 1203:       */
+        -: 1204:      void
+        -: 1205:      open(const wchar_t* __s,
+        -: 1206:	   ios_base::openmode __mode = ios_base::in | ios_base::out)
+        -: 1207:      {
+        -: 1208:	if (!_M_filebuf.open(__s, __mode))
+        -: 1209:	  this->setstate(ios_base::failbit);
+        -: 1210:	else
+        -: 1211:	  this->clear();
+        -: 1212:      }
+        -: 1213:#endif
+        -: 1214:
+        -: 1215:#if __cplusplus >= 201103L
+        -: 1216:      /**
+        -: 1217:       *  @brief  Opens an external file.
+        -: 1218:       *  @param  __s  The name of the file.
+        -: 1219:       *  @param  __mode  The open mode flags.
+        -: 1220:       *
+        -: 1221:       *  Calls @c std::basic_filebuf::open(__s,__mode).  If that
+        -: 1222:       *  function fails, @c failbit is set in the stream's error state.
+        -: 1223:       */
+        -: 1224:      void
+        -: 1225:      open(const std::string& __s,
+        -: 1226:	   ios_base::openmode __mode = ios_base::in | ios_base::out)
+        -: 1227:      {
+        -: 1228:	if (!_M_filebuf.open(__s, __mode))
+        -: 1229:	  this->setstate(ios_base::failbit);
+        -: 1230:	else
+        -: 1231:	  // _GLIBCXX_RESOLVE_LIB_DEFECTS
+        -: 1232:	  // 409. Closing an fstream should clear error state
+        -: 1233:	  this->clear();
+        -: 1234:      }
+        -: 1235:
+        -: 1236:#if __cplusplus >= 201703L
+        -: 1237:      /**
+        -: 1238:       *  @brief  Opens an external file.
+        -: 1239:       *  @param  __s  The name of the file, as a filesystem::path.
+        -: 1240:       *  @param  __mode  The open mode flags.
+        -: 1241:       *
+        -: 1242:       *  Calls @c std::basic_filebuf::open(__s,__mode).  If that
+        -: 1243:       *  function fails, @c failbit is set in the stream's error state.
+        -: 1244:       */
+        -: 1245:      template<typename _Path>
+        -: 1246:	_If_fs_path<_Path, void>
+        -: 1247:	open(const _Path& __s,
+        -: 1248:	     ios_base::openmode __mode = ios_base::in | ios_base::out)
+        -: 1249:	{ open(__s.c_str(), __mode); }
+        -: 1250:#endif // C++17
+        -: 1251:#endif // C++11
+        -: 1252:
+        -: 1253:      /**
+        -: 1254:       *  @brief  Close the file.
+        -: 1255:       *
+        -: 1256:       *  Calls @c std::basic_filebuf::close().  If that function
+        -: 1257:       *  fails, @c failbit is set in the stream's error state.
+        -: 1258:       */
+        -: 1259:      void
+        -: 1260:      close()
+        -: 1261:      {
+        -: 1262:	if (!_M_filebuf.close())
+        -: 1263:	  this->setstate(ios_base::failbit);
+        -: 1264:      }
+        -: 1265:    };
+        -: 1266:
+        -: 1267:#if __cplusplus >= 201103L
+        -: 1268:  /// Swap specialization for filebufs.
+        -: 1269:  template <class _CharT, class _Traits>
+        -: 1270:    inline void
+        -: 1271:    swap(basic_filebuf<_CharT, _Traits>& __x,
+        -: 1272:	 basic_filebuf<_CharT, _Traits>& __y)
+        -: 1273:    { __x.swap(__y); }
+        -: 1274:
+        -: 1275:  /// Swap specialization for ifstreams.
+        -: 1276:  template <class _CharT, class _Traits>
+        -: 1277:    inline void
+        -: 1278:    swap(basic_ifstream<_CharT, _Traits>& __x,
+        -: 1279:	 basic_ifstream<_CharT, _Traits>& __y)
+        -: 1280:    { __x.swap(__y); }
+        -: 1281:
+        -: 1282:  /// Swap specialization for ofstreams.
+        -: 1283:  template <class _CharT, class _Traits>
+        -: 1284:    inline void
+        -: 1285:    swap(basic_ofstream<_CharT, _Traits>& __x,
+        -: 1286:	 basic_ofstream<_CharT, _Traits>& __y)
+        -: 1287:    { __x.swap(__y); }
+        -: 1288:
+        -: 1289:  /// Swap specialization for fstreams.
+        -: 1290:  template <class _CharT, class _Traits>
+        -: 1291:    inline void
+        -: 1292:    swap(basic_fstream<_CharT, _Traits>& __x,
+        -: 1293:	 basic_fstream<_CharT, _Traits>& __y)
+        -: 1294:    { __x.swap(__y); }
+        -: 1295:#endif
+        -: 1296:
+        -: 1297:_GLIBCXX_END_NAMESPACE_VERSION
+        -: 1298:} // namespace
+        -: 1299:
+        -: 1300:#include <bits/fstream.tcc>
+        -: 1301:
+        -: 1302:#endif /* _GLIBCXX_FSTREAM */

@@ -5,7 +5,7 @@
 - [ ] Write Pseudocode, work through example input/output, and find resources for [`./designs/obj-c/filter-by-job/`](/designs/obj-c/filter-by-job/)
 - [ ] Write Pseudocode, work through example input/output, and find resources for [`./designs/obj-c/compute-use/`](/designs/obj-c/compute-use/)
 - [ ] Write Pseudocode, work through example input/output, and find resources for [`./designs/obj-c/plot-use`](/designs/obj-c/plot-use)
-- [x] Write Pseudocode, work through example input/output, and find resources for [`./designs/obj-c/derive-sys-metrics`](/designs/obj-c/derive-sys-metrics)
+- [ ] Write Pseudocode, work through example input/output, and find resources for [`./designs/obj-c/derive-sys-metrics`](/designs/obj-c/derive-sys-metrics)
 - [ ] Write Pseudocode, work through example input/output, and find resources for [`./designs/obj-c/plot-sys-metrics/`](/designs/obj-c/plot-sys-metrics/)
 - [ ] Write Pseudocode, work through example input/output, and find resources for [`./designs/obj-c/derive-event-metrics/`](/designs/obj-c/derive-event-metrics/)
 - [ ] Write Pseudocode, work through example input/output, and find resources for [`./designs/obj-c/plot-derive-event-metrics`](/designs/obj-c/plot-derive-event-metrics)
