@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-09-27T17:31:27.369541+00:00",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+  "source_commit": "97064fb39ad7b1c83aa47a5b8067973255d8ecf1",
+  "shared_source_changes": "",
+  "script_sha256": "61feb9790b4af8c437d79387e47c2c695c4ac3ec1a6c819b4d54fb40d33e9e4c",
+  "helper_script_sha256": "2fc19eef1a839cfdfcc2fa2c488f2569def238aab00f50c902e7736075358cdc",
+  "build": {
+    "compiler": {
+      "argv": [
+        "C:\\msys64\\ucrt64\\bin\\g++.EXE",
+        "--version"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stdout": "g++.EXE (Rev2, Built by MSYS2 project) 14.2.0\nCopyright (C) 2024 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+      "stderr": ""
+    },
+    "build_commands": [
+      {
+        "argv": [
+          "C:\\msys64\\ucrt64\\bin\\g++.EXE",
+          "-std=c++20",
+          "-Wall",
+          "-Wextra",
+          "-Wpedantic",
+          "-O2",
+          "-Iimplementation/obj-a/workload-generator/include",
+          "implementation/obj-a/workload-generator/src/main.cpp",
+          "implementation/obj-a/workload-generator/src/workload_generator.cpp",
+          "-o",
+          "analysis/simple/.build/workload-preparation/workload-generator.exe"
+        ],
+        "cwd": ".",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "C:\\msys64\\ucrt64\\bin\\g++.EXE",
+          "-std=c++20",
+          "-Wall",
+          "-Wextra",
+          "-Wpedantic",
+          "-O2",
+          "-Iimplementation/obj-a/workload-visualizer/include",
+          "implementation/obj-a/workload-visualizer/src/main.cpp",
+          "implementation/obj-a/workload-visualizer/src/workload_visualizer.cpp",
+          "-o",
+          "analysis/simple/.build/workload-preparation/workload-visualizer.exe"
+        ],
+        "cwd": ".",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "source_sha256": {
+      "implementation/obj-a/workload-generator/include/workload_generator.hpp": "4ef0e84819b4f370498b1b5c92293f4236772210b4e48b3eda49edca2a674e19",
+      "implementation/obj-a/workload-generator/src/main.cpp": "14b367644cb9fa1b3787c0b670806e697608741c72bd7525215ec72dfa2e67e9",
+      "implementation/obj-a/workload-generator/src/workload_generator.cpp": "2201b996de8647b87a167c9755030c4e3339d4a6fbec76ef070150452dd35fb7",
+      "implementation/obj-a/workload-generator/tests/test_workload_generator.cpp": "36432f36fe6eda941dc3b98484feae952d3664f17f37e38a275ceaa18bbe26a4",
+      "implementation/obj-a/workload-visualizer/include/workload_visualizer.hpp": "e13b21547c97cfa52fdf02449590ebcf1cfca8c0e9b450a92bfcad0e3e1a4467",
+      "implementation/obj-a/workload-visualizer/src/main.cpp": "2c3f5c931d672da3c869ef9b163eba4f2a3052f33638e9c12e389d3d3c94cabd",
+      "implementation/obj-a/workload-visualizer/src/workload_visualizer.cpp": "82bfb542f4d175ccfe9935958399744f11a84a1ff37709b0370257c563ec56e0",
+      "implementation/obj-a/workload-visualizer/tests/test_workload_visualizer.cpp": "fa1780e671ed92aaab011ba67301928769d83ecbe7c714330a12b0b7dad15040"
+    },
+    "executable_sha256": {
+      "workload-generator": "b0d5f99933452c166e1487df37ad369aecb3aba87c7b49ce984d0f311ba47848",
+      "workload-visualizer": "a960ba19b53f675baa2d0474d989e2e31d3d62f04ca7d4f83804d13781dfb430"
+    }
+  },
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "horizons": [
+    2880,
+    28800
+  ],
+  "demands": {
+    "light": "0.010",
+    "near": "0.025",
+    "over": "0.040"
+  },
+  "workload_count": 18,
+  "experiment_count": 60,
+  "plot_count": 4,
+  "manifest_sha256": "deb18b1a73f6c31611cc2a0f05e697949c859fb334574bca040f1c1e8e68bf1f",
+  "summary_sha256": "b99923e5bda53deef114f34619d1d4b90836b9e14b8f41595cda6962272e4985",
+  "verification": {
+    "all_workloads_repeated_identically": true,
+    "all_ids_arrivals_preserved": true,
+    "paired_resources_share_exact_workloads": true
+  },
+  "limitations": [
+    "Synthetic inputs only; no experimental B simulations or C analysis were run.",
+    "Seed reproducibility was checked within this build/environment; C++ distribution implementations can differ across toolchains.",
+    "A histogram groups arrival timestamps; it does not fit or validate a Poisson distribution."
+  ]
+}

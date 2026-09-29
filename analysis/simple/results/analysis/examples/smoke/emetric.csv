@@ -1,0 +1,7 @@
+job-id,queue-sys-id,arrival-time,time-in-queue,time-in-service,response-time,turn-around-time
+j0,q0,0,0,34,0,34
+j1,q0,4,30,34,30,64
+j2,q0,9,59,34,59,93
+j3,q0,10,92,34,92,126
+j4,q0,15,121,34,121,155
+j5,q0,22,148,34,148,182

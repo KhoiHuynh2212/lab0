@@ -1,0 +1,101 @@
+{
+  "plot_seed": 42,
+  "histogram_shared_ymax": 80,
+  "histogram_bins": 20,
+  "plots": [
+    {
+      "file": "results/figures/workloads/light-h28800-seed42-arrivals.png",
+      "workload_id": "light-h28800-seed42",
+      "command": {
+        "argv": [
+          "C:\\Users\\thier\\OneDrive\\Desktop\\OU eng\\Senior\\Fall2026\\DOS CS4113\\Lab0\\dos-team2-repo\\lab0\\analysis\\simple\\.build\\workload-preparation\\workload-visualizer.exe",
+          "analysis/simple/workloads/generated/light-h28800-seed42/workload.csv",
+          "--hist=arrival time",
+          "--bins=20",
+          "--xlim=0,28800",
+          "--ylim=0,80",
+          "--width=800",
+          "--height=500",
+          "--title=LIGHT ARRIVALS - SEED 42 - 10 SEC/STEP",
+          "--out=analysis/simple/results/figures/workloads/light-h28800-seed42-arrivals.png"
+        ],
+        "cwd": ".",
+        "exit_code": 0,
+        "stdout": "Wrote plot to analysis/simple/results/figures/workloads/light-h28800-seed42-arrivals.png\n",
+        "stderr": ""
+      },
+      "sha256": "179c71c09fed24a3acd542e62aafac3dc5a3258568175fcbe54324eae5a19f08",
+      "bin_width_steps": 1440
+    },
+    {
+      "file": "results/figures/workloads/near-h28800-seed42-arrivals.png",
+      "workload_id": "near-h28800-seed42",
+      "command": {
+        "argv": [
+          "C:\\Users\\thier\\OneDrive\\Desktop\\OU eng\\Senior\\Fall2026\\DOS CS4113\\Lab0\\dos-team2-repo\\lab0\\analysis\\simple\\.build\\workload-preparation\\workload-visualizer.exe",
+          "analysis/simple/workloads/generated/near-h28800-seed42/workload.csv",
+          "--hist=arrival time",
+          "--bins=20",
+          "--xlim=0,28800",
+          "--ylim=0,80",
+          "--width=800",
+          "--height=500",
+          "--title=NEAR ARRIVALS - SEED 42 - 10 SEC/STEP",
+          "--out=analysis/simple/results/figures/workloads/near-h28800-seed42-arrivals.png"
+        ],
+        "cwd": ".",
+        "exit_code": 0,
+        "stdout": "Wrote plot to analysis/simple/results/figures/workloads/near-h28800-seed42-arrivals.png\n",
+        "stderr": ""
+      },
+      "sha256": "2edb725623c207ca01fe23a6150f6c7b0d6c541cfdd313f1cfa891c48975d182",
+      "bin_width_steps": 1440
+    },
+    {
+      "file": "results/figures/workloads/near-h28800-seed42-tasks.png",
+      "workload_id": "near-h28800-seed42",
+      "command": {
+        "argv": [
+          "C:\\Users\\thier\\OneDrive\\Desktop\\OU eng\\Senior\\Fall2026\\DOS CS4113\\Lab0\\dos-team2-repo\\lab0\\analysis\\simple\\.build\\workload-preparation\\workload-visualizer.exe",
+          "analysis/simple/workloads/generated/near-h28800-seed42/workload.csv",
+          "--scat=arrival time,len(Tasks)",
+          "--xlim=0,28800",
+          "--ylim=0,6",
+          "--width=800",
+          "--height=500",
+          "--title=FIVE TASKS PER CAR - SEED 42 - 10 SEC/STEP",
+          "--out=analysis/simple/results/figures/workloads/near-h28800-seed42-tasks.png"
+        ],
+        "cwd": ".",
+        "exit_code": 0,
+        "stdout": "Wrote plot to analysis/simple/results/figures/workloads/near-h28800-seed42-tasks.png\n",
+        "stderr": ""
+      },
+      "sha256": "e520783e15c4008afe067367743709bcc3934854f6cc6916a5c659c22d594859"
+    },
+    {
+      "file": "results/figures/workloads/over-h28800-seed42-arrivals.png",
+      "workload_id": "over-h28800-seed42",
+      "command": {
+        "argv": [
+          "C:\\Users\\thier\\OneDrive\\Desktop\\OU eng\\Senior\\Fall2026\\DOS CS4113\\Lab0\\dos-team2-repo\\lab0\\analysis\\simple\\.build\\workload-preparation\\workload-visualizer.exe",
+          "analysis/simple/workloads/generated/over-h28800-seed42/workload.csv",
+          "--hist=arrival time",
+          "--bins=20",
+          "--xlim=0,28800",
+          "--ylim=0,80",
+          "--width=800",
+          "--height=500",
+          "--title=OVER ARRIVALS - SEED 42 - 10 SEC/STEP",
+          "--out=analysis/simple/results/figures/workloads/over-h28800-seed42-arrivals.png"
+        ],
+        "cwd": ".",
+        "exit_code": 0,
+        "stdout": "Wrote plot to analysis/simple/results/figures/workloads/over-h28800-seed42-arrivals.png\n",
+        "stderr": ""
+      },
+      "sha256": "4c0fece869469673ca5ec4bf0cc9b270f7667abe763535c8f58fefd19282ec92",
+      "bin_width_steps": 1440
+    }
+  ]
+}

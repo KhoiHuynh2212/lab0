@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "offered": 6,
+  "completed": 6,
+  "rejected": 0,
+  "last_departure": 204,
+  "service_steps_per_car": 34,
+  "completion_times": [
+    34,
+    68,
+    102,
+    136,
+    170,
+    204
+  ],
+  "checks": [
+    "arrival accounting",
+    "FIFO timing",
+    "service duration",
+    "empty completed tasks",
+    "queue/server bounds",
+    "cumulative errors",
+    "all admitted cars drained"
+  ]
+}
