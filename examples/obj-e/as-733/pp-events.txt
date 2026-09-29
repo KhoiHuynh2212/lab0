@@ -1,0 +1,19 @@
+time  q0                       q1                q2
+---------------------------------------------------
+   0  j0 ARRIVE-VIA in0.wl
+      j0 ENTERS-SERVER 0
+      j0 TASK-START 0 "W 10"
+  10  j0 TASK-STOP 0 "W 10"
+      j0 TASK-START 1 "W 10"
+  20  j0 TASK-STOP 1 "W 10"
+      j0 EXITS-SERVER 0
+      j0 DEPART-VIA q1
+      j25 ARRIVE-VIA in0.wl    j0 DEPART-VIA q2
+                                                 j0 DEPART-VIA q3
+ 220  j25 ENTERS-SERVER 0
+      j25 TASK-START 0 "W 10"
+ 230  j25 TASK-STOP 0 "W 10"
+      j25 TASK-START 1 "W 10"
+ 240  j25 TASK-STOP 1 "W 10"
+      j25 EXITS-SERVER 0
+      j25 DEPART-VIA q12
