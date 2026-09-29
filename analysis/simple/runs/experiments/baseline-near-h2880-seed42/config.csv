@@ -1,0 +1,2 @@
+Queue sys ID,Max Queue Size,# of servers,Server Function,Server Function Rate,source,sink,Edges in,Edges out
+q0,20,1,Sub-1*,1,../../../workloads/generated/near-h2880-seed42/workload.csv,completed.csv,[],[]

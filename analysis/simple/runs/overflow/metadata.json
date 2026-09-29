@@ -1,0 +1,25 @@
+{
+  "source_commit": "53a42b6f0e37584fdc8f965a1f606e6f1a32382d",
+  "input_kind": "hand-constructed validation fixture",
+  "seed": null,
+  "workload": "analysis/simple/workloads/overflow.csv",
+  "workload_sha256": "6c00c5532afba39e3be74e1c84803e9f3180fc6e5e755ab4ec25eb770e1de1b0",
+  "config_sha256": "a3a451b1c60a56012fe05ce6bbbb09e10f5f3a823e3f281259d959387625483e",
+  "command": {
+    "argv": [
+      "C:\\Users\\thier\\OneDrive\\Desktop\\OU eng\\Senior\\Fall2026\\DOS CS4113\\Lab0\\dos-team2-repo\\lab0\\analysis\\simple\\.build\\simple-queue-sim.exe",
+      "config.csv",
+      "--metrics",
+      "qmet.csv",
+      "--events",
+      "job.log"
+    ],
+    "cwd": "analysis/simple/runs/overflow",
+    "exit_code": 0,
+    "stdout": "simulation complete: 715 time steps, 21 sink jobs, 1 errors\n",
+    "stderr": ""
+  },
+  "simulator_sha256": "45db8159f0159a962e2eb4e9c10f8c8cd1f2de42a757ca59126acf43bb85e72b",
+  "build_report": "../build-checks.json",
+  "time_unit_seconds": 10
+}

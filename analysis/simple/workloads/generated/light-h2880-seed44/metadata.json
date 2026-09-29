@@ -1,0 +1,91 @@
+{
+  "workload_id": "light-h2880-seed44",
+  "demand": "light",
+  "arrival_lambda": "0.010",
+  "arrival_horizon": 2880,
+  "seed": 44,
+  "job_count": 30,
+  "expected_job_count": "28.80",
+  "observed_arrivals_per_step": "0.01041667",
+  "observed_arrivals_per_hour": "3.7500",
+  "first_arrival": 6,
+  "last_arrival": 2752,
+  "workload_sha256": "b10ea9932c0ec20dd7fd4fd052e5859cb189f36c36eef5d5b77e0990e9ca2c91",
+  "distribution": "poisson counts per integer timestep",
+  "interval_inclusive": [
+    0,
+    2879
+  ],
+  "time_unit_seconds": 10,
+  "tasks": [
+    "0: W 5",
+    "1: W 8",
+    "2: W 10",
+    "3: W 6",
+    "4: W 5"
+  ],
+  "total_work_per_car": 34,
+  "generator_output_sha256": "74658c3fc7213805d3f737e3c21e62863d2941cd89da9b65c6e54ea3b67a67ba",
+  "generator_command": {
+    "argv": [
+      "C:\\Users\\thier\\OneDrive\\Desktop\\OU eng\\Senior\\Fall2026\\DOS CS4113\\Lab0\\dos-team2-repo\\lab0\\analysis\\simple\\.build\\workload-preparation\\workload-generator.exe",
+      "--out",
+      "analysis/simple/workloads/generated/light-h2880-seed44/generator-output.csv",
+      "--interval",
+      "0,2879",
+      "--distribution",
+      "poisson",
+      "--lambda",
+      "0.010",
+      "--tasks-per-job",
+      "1",
+      "--task-work",
+      "fixed",
+      "--fixed-task-work",
+      "1",
+      "--seed",
+      "44",
+      "--job-prefix",
+      "j"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "stdout": "Generated 30 jobs from time 0 through 2879 using the poisson distribution.\nWrote workload to analysis/simple/workloads/generated/light-h2880-seed44/generator-output.csv\n",
+    "stderr": ""
+  },
+  "repeat_command": {
+    "argv": [
+      "C:\\Users\\thier\\OneDrive\\Desktop\\OU eng\\Senior\\Fall2026\\DOS CS4113\\Lab0\\dos-team2-repo\\lab0\\analysis\\simple\\.build\\workload-preparation\\workload-generator.exe",
+      "--out",
+      "analysis/simple/.build/workload-preparation/repeat-workloads/light-h2880-seed44.csv",
+      "--interval",
+      "0,2879",
+      "--distribution",
+      "poisson",
+      "--lambda",
+      "0.010",
+      "--tasks-per-job",
+      "1",
+      "--task-work",
+      "fixed",
+      "--fixed-task-work",
+      "1",
+      "--seed",
+      "44",
+      "--job-prefix",
+      "j"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "stdout": "Generated 30 jobs from time 0 through 2879 using the poisson distribution.\nWrote workload to analysis/simple/.build/workload-preparation/repeat-workloads/light-h2880-seed44.csv\n",
+    "stderr": ""
+  },
+  "provenance": "../../preparation.json",
+  "verification": {
+    "same_seed_byte_identical": true,
+    "arrival_ids_preserved": true,
+    "unique_ids": true,
+    "arrivals_in_bounds_and_sorted": true,
+    "fixed_five_stage_tasks": true
+  }
+}

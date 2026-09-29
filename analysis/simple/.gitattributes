@@ -1,0 +1,10 @@
+# Preserve generated CSV bytes so recorded SHA-256 hashes survive checkout.
+# In particular, retain the original generator's native line endings.
+experiments.csv -text
+workloads/generated/**/*.csv -text
+results/tables/workloads.csv -text
+# Raw experiment files are evidence; preserve their recorded checksums.
+runs/experiments/** -text
+results/tables/run-summary.csv -text
+# Preserve generated analysis evidence and its recorded checksums.
+results/analysis/** -text

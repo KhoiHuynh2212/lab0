@@ -1,0 +1,241 @@
+{
+  "compiler": {
+    "argv": [
+      "C:\\msys64\\ucrt64\\bin\\g++.EXE",
+      "--version"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "stdout": "g++.EXE (Rev2, Built by MSYS2 project) 14.2.0\nCopyright (C) 2024 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+    "stderr": ""
+  },
+  "components": {
+    "workload-generator": [
+      {
+        "argv": [
+          "C:\\msys64\\ucrt64\\bin\\g++.EXE",
+          "-std=c++20",
+          "-Wall",
+          "-Wextra",
+          "-Wpedantic",
+          "-O2",
+          "-Iimplementation/obj-a/workload-generator/include",
+          "implementation/obj-a/workload-generator/src/main.cpp",
+          "implementation/obj-a/workload-generator/src/workload_generator.cpp",
+          "-o",
+          "analysis/simple/.build/workload-generator.exe"
+        ],
+        "cwd": ".",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "C:\\msys64\\ucrt64\\bin\\g++.EXE",
+          "-std=c++20",
+          "-Wall",
+          "-Wextra",
+          "-Wpedantic",
+          "-O2",
+          "-Iimplementation/obj-a/workload-generator/include",
+          "implementation/obj-a/workload-generator/tests/test_workload_generator.cpp",
+          "implementation/obj-a/workload-generator/src/workload_generator.cpp",
+          "-o",
+          "analysis/simple/.build/test-workload-generator.exe"
+        ],
+        "cwd": ".",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "C:\\Users\\thier\\OneDrive\\Desktop\\OU eng\\Senior\\Fall2026\\DOS CS4113\\Lab0\\dos-team2-repo\\lab0\\analysis\\simple\\.build\\test-workload-generator.exe"
+        ],
+        "cwd": "analysis/simple/.build",
+        "exit_code": 0,
+        "stdout": "PASS: 37 workload-generator checks\n",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "C:\\Users\\thier\\OneDrive\\Desktop\\OU eng\\Senior\\Fall2026\\DOS CS4113\\Lab0\\dos-team2-repo\\lab0\\analysis\\simple\\.build\\workload-generator.exe",
+          "--help"
+        ],
+        "cwd": "analysis/simple/.build",
+        "exit_code": 0,
+        "stdout": "Obj-A Workload Generator\n\nGenerates a sorted synthetic workload in the CSV format used by Obj-B.\n\nUsage:\n  ./workload-generator --out <file> --interval <start,end>\n                       --distribution <uniform|normal|geometric|poisson>\n                       <distribution statistics> [options]\n\nDistribution statistics:\n  uniform:   --min <integer> --max <integer>\n  normal:    --mean <number> --stddev <positive number>\n  geometric: --probability <number in (0,1]>\n  poisson:   --lambda <positive number>\n\nTask options:\n  --tasks-per-job <count>          Number of tasks in each generated job. Default: 1\n  --task-work <fixed|distribution> Fixed work or work drawn from the same distribution.\n                                    Default: fixed\n  --fixed-task-work <positive N>   W N value used by fixed task work. Default: 10\n\nOther options:\n  --seed <integer>                 Reproduce the same random workload.\n  --job-prefix <text>              Prefix for job IDs. Default: j\n  --help                           Show this help text.\n\nExamples:\n  ./workload-generator --out workload.csv --interval 0,20 \\\n      --distribution uniform --min 0 --max 2 \\\n      --tasks-per-job 2 --task-work fixed --fixed-task-work 10 --seed 7\n\n  ./workload-generator --out workload.csv --interval 0,50 \\\n      --distribution poisson --lambda 1.5 \\\n      --tasks-per-job 1 --task-work distribution --seed 42\n",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "C:\\Users\\thier\\OneDrive\\Desktop\\OU eng\\Senior\\Fall2026\\DOS CS4113\\Lab0\\dos-team2-repo\\lab0\\analysis\\simple\\.build\\workload-generator.exe"
+        ],
+        "cwd": "analysis/simple/.build",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "workload-generator: missing required option --out\nRun workload-generator --help for usage.\n"
+      }
+    ],
+    "workload-visualizer": [
+      {
+        "argv": [
+          "C:\\msys64\\ucrt64\\bin\\g++.EXE",
+          "-std=c++20",
+          "-Wall",
+          "-Wextra",
+          "-Wpedantic",
+          "-O2",
+          "-Iimplementation/obj-a/workload-visualizer/include",
+          "implementation/obj-a/workload-visualizer/src/main.cpp",
+          "implementation/obj-a/workload-visualizer/src/workload_visualizer.cpp",
+          "-o",
+          "analysis/simple/.build/workload-visualizer.exe"
+        ],
+        "cwd": ".",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "C:\\msys64\\ucrt64\\bin\\g++.EXE",
+          "-std=c++20",
+          "-Wall",
+          "-Wextra",
+          "-Wpedantic",
+          "-O2",
+          "-Iimplementation/obj-a/workload-visualizer/include",
+          "implementation/obj-a/workload-visualizer/tests/test_workload_visualizer.cpp",
+          "implementation/obj-a/workload-visualizer/src/workload_visualizer.cpp",
+          "-o",
+          "analysis/simple/.build/test-workload-visualizer.exe"
+        ],
+        "cwd": ".",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "C:\\Users\\thier\\OneDrive\\Desktop\\OU eng\\Senior\\Fall2026\\DOS CS4113\\Lab0\\dos-team2-repo\\lab0\\analysis\\simple\\.build\\test-workload-visualizer.exe"
+        ],
+        "cwd": "analysis/simple/.build",
+        "exit_code": 0,
+        "stdout": "PASS: 28 workload-visualizer checks\n",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "C:\\Users\\thier\\OneDrive\\Desktop\\OU eng\\Senior\\Fall2026\\DOS CS4113\\Lab0\\dos-team2-repo\\lab0\\analysis\\simple\\.build\\workload-visualizer.exe",
+          "--help"
+        ],
+        "cwd": "analysis/simple/.build",
+        "exit_code": 0,
+        "stdout": "Obj-A Workload Visualizer\n\nCreates a PNG histogram or scatter plot from a workload CSV file.\n\nUsage:\n  ./workload-visualizer <workload.csv> --hist=\"arrival time\" --out=plot.png [options]\n  ./workload-visualizer <workload.csv> --scat=\"arrival time,len(Tasks)\" --out=plot.png [options]\n\nPlot modes:\n  --hist <column>              Histogram of one numeric column.\n  --scat <x-column,y-column>   Scatter plot comparing two numeric columns.\n\nSupported numeric workload values:\n  arrival time\n  len(Tasks)\n\nOptions:\n  --out <file.png>             Output PNG file. Required.\n  --bins <count>               Histogram bin count. Default: 10\n  --xlim <min,max>             Optional x-axis limits.\n  --ylim <min,max>             Optional y-axis limits.\n  --title <text>               Optional plot title.\n  --width <pixels>             PNG width. Default: 1000\n  --height <pixels>            PNG height. Default: 700\n  --help                       Show this help text.\n\nExamples:\n  ./workload-visualizer workload.csv \\\n      --hist=\"arrival time\" --bins=20 --out=arrival-histogram.png\n\n  ./workload-visualizer workload.csv \\\n      --scat=\"arrival time,len(Tasks)\" \\\n      --title=\"Arrival Time vs Task Count\" \\\n      --out=arrival-vs-tasks.png\n",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "C:\\Users\\thier\\OneDrive\\Desktop\\OU eng\\Senior\\Fall2026\\DOS CS4113\\Lab0\\dos-team2-repo\\lab0\\analysis\\simple\\.build\\workload-visualizer.exe"
+        ],
+        "cwd": "analysis/simple/.build",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "workload-visualizer: missing workload filename\nRun workload-visualizer --help for usage.\n"
+      }
+    ],
+    "simple-queue-sim": [
+      {
+        "argv": [
+          "C:\\msys64\\ucrt64\\bin\\g++.EXE",
+          "-std=c++20",
+          "-Wall",
+          "-Wextra",
+          "-Wpedantic",
+          "-O2",
+          "-Iimplementation/obj-b/simple-queue-sim/include",
+          "implementation/obj-b/simple-queue-sim/src/main.cpp",
+          "implementation/obj-b/simple-queue-sim/src/queue_sim.cpp",
+          "-o",
+          "analysis/simple/.build/simple-queue-sim.exe"
+        ],
+        "cwd": ".",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "C:\\msys64\\ucrt64\\bin\\g++.EXE",
+          "-std=c++20",
+          "-Wall",
+          "-Wextra",
+          "-Wpedantic",
+          "-O2",
+          "-Iimplementation/obj-b/simple-queue-sim/include",
+          "implementation/obj-b/simple-queue-sim/tests/test_queue_sim.cpp",
+          "implementation/obj-b/simple-queue-sim/src/queue_sim.cpp",
+          "-o",
+          "analysis/simple/.build/test-simple-queue-sim.exe"
+        ],
+        "cwd": ".",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "C:\\Users\\thier\\OneDrive\\Desktop\\OU eng\\Senior\\Fall2026\\DOS CS4113\\Lab0\\dos-team2-repo\\lab0\\analysis\\simple\\.build\\test-simple-queue-sim.exe"
+        ],
+        "cwd": "analysis/simple/.build",
+        "exit_code": 0,
+        "stdout": "PASS: 106 checks\n",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "C:\\Users\\thier\\OneDrive\\Desktop\\OU eng\\Senior\\Fall2026\\DOS CS4113\\Lab0\\dos-team2-repo\\lab0\\analysis\\simple\\.build\\simple-queue-sim.exe",
+          "--help"
+        ],
+        "cwd": "analysis/simple/.build",
+        "exit_code": 0,
+        "stdout": "Usage: simple-queue-sim CONFIG [TIME_LIMIT] [--time-limit N] [--metrics FILE] [--events FILE]\n\nSimulates exactly one queue-system row from CONFIG. Source/sink paths in the\nconfiguration are resolved relative to CONFIG. If no time limit is given, the\nsimulator runs until all source jobs have arrived and the queue/servers drain.\n",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "C:\\Users\\thier\\OneDrive\\Desktop\\OU eng\\Senior\\Fall2026\\DOS CS4113\\Lab0\\dos-team2-repo\\lab0\\analysis\\simple\\.build\\simple-queue-sim.exe"
+        ],
+        "cwd": "analysis/simple/.build",
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "Usage: simple-queue-sim CONFIG [TIME_LIMIT] [--time-limit N] [--metrics FILE] [--events FILE]\n\nSimulates exactly one queue-system row from CONFIG. Source/sink paths in the\nconfiguration are resolved relative to CONFIG. If no time limit is given, the\nsimulator runs until all source jobs have arrived and the queue/servers drain.\n"
+      }
+    ]
+  },
+  "limitations": [
+    "Native functional tests only; no Valgrind, ASan/UBSan, or coverage claim.",
+    "Team shell test runners were not invoked because they write into shared component directories."
+  ],
+  "recorded_at_utc": "2026-09-27T16:19:50.156740+00:00",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+  "source_commit": "53a42b6f0e37584fdc8f965a1f606e6f1a32382d",
+  "source_sha256": {
+    "implementation/obj-a/workload-generator/include/workload_generator.hpp": "4ef0e84819b4f370498b1b5c92293f4236772210b4e48b3eda49edca2a674e19",
+    "implementation/obj-a/workload-generator/src/main.cpp": "14b367644cb9fa1b3787c0b670806e697608741c72bd7525215ec72dfa2e67e9",
+    "implementation/obj-a/workload-generator/src/workload_generator.cpp": "2201b996de8647b87a167c9755030c4e3339d4a6fbec76ef070150452dd35fb7",
+    "implementation/obj-a/workload-generator/tests/test_workload_generator.cpp": "36432f36fe6eda941dc3b98484feae952d3664f17f37e38a275ceaa18bbe26a4",
+    "implementation/obj-a/workload-visualizer/include/workload_visualizer.hpp": "e13b21547c97cfa52fdf02449590ebcf1cfca8c0e9b450a92bfcad0e3e1a4467",
+    "implementation/obj-a/workload-visualizer/src/main.cpp": "2c3f5c931d672da3c869ef9b163eba4f2a3052f33638e9c12e389d3d3c94cabd",
+    "implementation/obj-a/workload-visualizer/src/workload_visualizer.cpp": "82bfb542f4d175ccfe9935958399744f11a84a1ff37709b0370257c563ec56e0",
+    "implementation/obj-a/workload-visualizer/tests/test_workload_visualizer.cpp": "fa1780e671ed92aaab011ba67301928769d83ecbe7c714330a12b0b7dad15040",
+    "implementation/obj-b/simple-queue-sim/include/queue_sim.hpp": "e8d7aa2969478b00cf6e96e0f1a0e639375fbafd52fa4e5c8607bf8fa4eca518",
+    "implementation/obj-b/simple-queue-sim/src/main.cpp": "1dfcf7deeff620191470dc1a9e7097dc1ddc6e8d9d02591da063d5f31bcaf2ff",
+    "implementation/obj-b/simple-queue-sim/src/queue_sim.cpp": "d4401983292e89b7f9d6e625295c9e016f4398d6a8a4a372b2755516b83e5958",
+    "implementation/obj-b/simple-queue-sim/tests/test_queue_sim.cpp": "1803d6073b8f95c9ec8c395ac9a3f980274dd438f5d5e8a91f86bf4d70bea8b8"
+  },
+  "source_changes": ""
+}
