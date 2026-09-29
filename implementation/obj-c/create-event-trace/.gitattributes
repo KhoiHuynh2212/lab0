@@ -1,0 +1,6 @@
+*.sh text eol=lf
+Makefile text eol=lf
+*.csv text eol=lf
+*.log text eol=lf
+create-event-trace text eol=lf
+*.py text eol=lf

@@ -1,0 +1,7 @@
+time-step,Utilization(10),Saturation(10),Errors(10),Utilization(100),Saturation(100),Errors(100),Utilization(1000),Saturation(1000),Errors(1000)
+0,1,1,0,1,1,0,1,1,0
+0,1,1,0,1,1,0,1,1,0
+1,1,1,0,1,1,0,1,1,0
+1,1,1,0,1,1,0,1,1,0
+2,1,2,0,1,2,0,1,2,0
+2,1,2,1,1,2,1,1,2,1

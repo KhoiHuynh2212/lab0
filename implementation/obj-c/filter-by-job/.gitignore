@@ -1,0 +1,5 @@
+filter-by-job
+.test-build/
+*.gcda
+*.gcno
+*.gcov

@@ -135,7 +135,7 @@ service_time_left=0
 ```
 
 |      Variable       | Purpose                             |
-| :-----------------: | ----------------------------------- |
+| :-----------------: | :---------------------------------- |
 |       `clock`       | current simulation timestep         |
 |       `limit`       | timestep where the simulation stops |
 |    `work_queue`     | jobs that arrived and are waiting   |
@@ -325,10 +325,10 @@ The relevant tasks include:
 - create the working implementation in [`./implementation/obj-b/simple-queue-sim/`](/implementation/obj-b/simple-queue-sim/)
 - create automated tests for the simple queue simulator
 
-[`q_ex-1.py`](./q_ex-1.py) is useful mainly as a reference/example for Objective B. It demonstrates:
+Veras's [`q_ex-1.py`](./q_ex-1.py) is useful mainly as a reference/example for Objective B. It demonstrates:
 
 | Objective B idea | Where it appears in [`q_ex-1.py`](./q_ex-1.py) |
-| ---------------- | ---------------------------------------------- |
+| :--------------- | :--------------------------------------------- |
 | simulation clock | `clock` and the `while` loop                   |
 | source workload  | the `jobs` list                                |
 | queue            | `work_queue`                                   |

@@ -4,12 +4,12 @@ This directory contains workload files and plots for the workload generator and 
 
 ## Workload files
 
-- `wl-example.csv` - small three-job source workload using the format shown in the lab slides.
-- `wl-completed-example.csv` - completed-job workload where `Tasks` is empty and the arrival-time field stores the time the job left the system.
-- `wl-uniform.csv` - generated with a uniform arrival distribution.
-- `wl-normal.csv` - generated with a normal arrival distribution.
-- `wl-geometric.csv` - generated with a geometric arrival distribution and distributed task work.
-- `wl-poisson.csv` - generated with a Poisson arrival distribution and distributed task work.
+- [`wl-example.csv`](./wl-example.csv) - small three-job source workload using the format shown in the lab slides.
+- [`wl-completed-example.csv`](./wl-completed-example.csv) - completed-job workload where `Tasks` is empty and the arrival-time field stores the time the job left the system.
+- [`wl-uniform.csv`](./wl-uniform.csv) - generated with a uniform arrival distribution.
+- [`wl-normal.csv`](./wl-normal.csv) - generated with a normal arrival distribution.
+- [`wl-geometric.csv`](./wl-geometric.csv) - generated with a geometric arrival distribution and distributed task work.
+- [`wl-poisson.csv`](./wl-poisson.csv) - generated with a Poisson arrival distribution and distributed task work.
 
 Every workload uses the same columns expected by Obj-B:
 

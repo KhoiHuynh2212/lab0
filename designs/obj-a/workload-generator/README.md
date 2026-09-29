@@ -1,128 +1,166 @@
-# Workload Generator Design
+# Objective A Design
 
-The workload generator creates a synthetic workload over an inclusive time interval. At each time step, it draws the number of arriving jobs from the selected distribution. Every job is given a sequential job ID and a task list.
+Objective A creates workload data and then gives us a way to look at that data before it is sent into the queue simulator.
 
-The output format is:
+It has two parts:
 
-```text
-Job Id,arrival time,Tasks
-```
+1. [`workload-generator/`](/designs/obj-a/workload-generator/) - creates synthetic workloads
+2. [`workload-visualizer/`](/designs/obj-a/workload-visualizer/) - turns workload values into PNG plots
 
-Each task has the form:
-
-```text
-<task-id>: W <positive number>
-```
-
-## Inputs
-
-The generator accepts all of its settings through command-line arguments.
-
-Required inputs are:
-
-- output filename
-- interval start and end
-- distribution type
-- statistics required by that distribution
-
-Supported distributions are:
-
-- uniform
-- normal
-- geometric
-- Poisson
-
-Task work can either be fixed or drawn from the same distribution.
-
-## Pseudocode
+The overall design is:
 
 ```text
-read command-line arguments
-validate interval, distribution statistics, and task settings
-create random-number engine
-create empty workload
-set next job number to 0
-
-for each time step from interval start through interval end:
-    draw number of arriving jobs from selected distribution
-    convert the result to a non-negative integer
-
-    repeat once for each arriving job:
-        create job ID using next job number
-        create empty task list
-
-        for each task assigned to the job:
-            if task work is fixed:
-                use fixed work amount
-            else:
-                draw from selected distribution until work is positive
-
-            add task as "<task-id>: W <work>"
-
-        add job with current time as arrival time
-        increase next job number
-
-sort jobs by arrival time
-write CSV header
-write every job to output workload
+               ┌────────────────────┐
+               │ Generator settings │
+               └─────────┬──────────┘
+                         │
+                         ↓
+               ┌────────────────────┐
+               │ workload-generator │
+               └─────────┬──────────┘
+                         │
+                         ↓
+               ┌────────────────────┐
+               │    workload.csv    │
+               └─────────┬──────────┘
+                         │
+              ┌──────────┴──────────┐
+              │                     │
+              ↓                     ↓
+    ┌─────────────────────┐   ┌─────────────────────┐
+    │ workload-visualizer │   │        Obj-B        │
+    └──────────┬──────────┘   └──────────┬──────────┘
+               │                         │
+               ↓                         ↓
+    ┌─────────────────────┐   ┌─────────────────────┐
+    │      plot.png       │   │    queue outputs    │
+    └─────────────────────┘   └─────────────────────┘
 ```
 
-## Distribution behavior
+---
 
-### Uniform
+## 1. Shared Workload Format
 
-Draw an integer from an inclusive minimum and maximum.
-
-### Normal
-
-Draw a real value from the requested mean and standard deviation, round it to an integer, and use zero if the rounded arrival count would be negative.
-
-### Geometric
-
-Use the probability parameter to draw the number of failures before a success. The result is already a non-negative integer.
-
-### Poisson
-
-Use lambda as the expected event count. The result is already a non-negative integer.
-
-## Worked example
-
-Command:
-
-```bash
-./workload-generator \
-    --out workload.csv \
-    --interval 0,2 \
-    --distribution uniform \
-    --min 1 \
-    --max 1 \
-    --tasks-per-job 2 \
-    --task-work fixed \
-    --fixed-task-work 10 \
-    --seed 1
-```
-
-Because the uniform range is exactly 1 through 1, one job arrives at every time step.
-
-Output:
+Both Obj-A tools use the same workload format as Obj-B:
 
 ```csv
 Job Id,arrival time,Tasks
 j0,0,"['0: W 10', '1: W 10']"
-j1,1,"['0: W 10', '1: W 10']"
-j2,2,"['0: W 10', '1: W 10']"
+j1,10,"['0: W 10']"
+j2,20,"['0: W 10', '1: W 10', '2: W 10']"
 ```
 
-The output is already sorted by arrival time and can be used as an Obj-B source workload.
+Each task has this form:
 
-## C++ resources
+```txt
+<task-id>: W <positive work amount>
+```
 
-The implementation uses the C++ standard random library:
+For example:
 
-- `std::uniform_int_distribution`
-- `std::normal_distribution`
-- `std::geometric_distribution`
-- `std::poisson_distribution`
-- `std::mt19937_64`
+```txt
+1: W 20
+```
 
-The CSV writer uses only the C++ standard library.
+means task `1` has `20` units of work.
+
+If a job has no tasks:
+
+```txt
+[]
+```
+
+then the job is complete.
+
+---
+
+## 2. Workload Generator
+
+The generator creates jobs over a chosen time interval.
+
+At each timestep it:
+
+1. draws the number of arriving jobs from a distribution
+2. gives each job a unique ID
+3. creates the requested number of tasks
+4. gives each task either fixed work or distributed work
+5. writes the jobs in arrival-time order
+
+The supported arrival distributions are:
+
+```txt
+uniform
+normal
+geometric
+poisson
+```
+
+Detailed pseudocode and a worked example are in:
+
+[`/designs/obj-a/workload-generator/README.md`](/designs/obj-a/workload-generator/README.md)
+
+The working program is in:
+
+[`/implementation/obj-a/workload-generator/`](/implementation/obj-a/workload-generator/)
+
+---
+
+## 3. Workload Visualizer
+
+The visualizer reads a workload and makes one of two plots:
+
+```txt
+Histogram:  one workload value -> frequency bars
+Scatter:    two workload values -> one point per job
+```
+
+The main values used for plotting are:
+
+- `arrival time`
+- `len(Tasks)`
+
+`len(Tasks)` is found by counting the tasks in each job.
+
+Detailed pseudocode and worked examples are in:
+
+[`/designs/obj-a/workload-visualizer/README.md`](/designs/obj-a/workload-visualizer/README.md)
+
+The working program is in:
+
+[`/implementation/obj-a/workload-visualizer/`](/implementation/obj-a/workload-visualizer/)
+
+---
+
+## 4. Connection to Objective B
+
+The generator does not need a conversion step before Obj-B.
+
+```text
+┌────────────────────────┐
+│ Obj-A generator output │
+└────────────┬───────────┘
+             │
+             ↓
+┌────────────────────────┐
+│ Job Id, arrival time,  │
+│ Tasks                  │
+└────────────┬───────────┘
+             │
+             ↓
+┌────────────────────────┐
+│ Obj-B source workload  │
+└────────────────────────┘
+```
+
+Obj-B also writes completed jobs using the same three columns. This means the visualizer can read either:
+
+- a workload before simulation
+- or a completed sink workload after simulation
+
+Example files are in:
+
+[`/examples/obj-a/`](/examples/obj-a/)
+
+The complete Obj-A run guide is in:
+
+[`/implementation/obj-a/README.md`](/implementation/obj-a/README.md)
