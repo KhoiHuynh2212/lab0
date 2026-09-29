@@ -111,5 +111,5 @@ git clone git@gitlab.com:dos-team2/lab0
 |   A    |  Joy Mosisa  |  Manager  |  <joy.j.mosia-1@ou.edu>  | stormify.exe |
 |   B    | Jace Rausch  | Tech Lead |      <jace@ou.edu>       |    jace.r    |
 |   C    |  Jay Singh   |  Member   | <jasakaran.singh@ou.edu> |  jsinggh512  |
-|   D    |  Khoi Huyn   |  Member   | <khoi.t.huynh-1@ou.edu>  |  leokhoi22   |
+|   D    |  Khoi Huynh  |  Member   | <khoi.t.huynh-1@ou.edu>  |  leokhoi22   |
 |   E    | Luc Mwizerwa |  Member   |       <luc@ou.edu>       |    .luc23    |
