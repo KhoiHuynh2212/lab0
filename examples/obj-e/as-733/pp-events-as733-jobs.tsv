@@ -1,0 +1,45 @@
+time	q0	q1	q2	q3	q4	q5	q6	q7	q8	q9	q10	q12	q15	q22	q26	q28	q30	q41	q47	q49
+0	j0 ARRIVE-VIA in0.wl																			
+	j0 ENTERS-SERVER 0																			
+	j0 TASK-START 0 "W 10"																			
+	j1 ARRIVE-VIA in0.wl																			
+10	j0 TASK-STOP 0 "W 10"																			
+	j0 TASK-START 1 "W 10"																			
+20	j0 TASK-STOP 1 "W 10"																			
+	j0 EXITS-SERVER 0																			
+	j0 DEPART-VIA q1																			
+	j1 ENTERS-SERVER 0	j0 DEPART-VIA q2																		
+	j1 TASK-START 0 "W 10"		j0 DEPART-VIA q3																	
+	j25 ARRIVE-VIA in0.wl			j0 DEPART-VIA q4																
+					j0 DEPART-VIA q5															
+						j0 DEPART-VIA q6														
+							j0 DEPART-VIA q7													
+								j0 DEPART-VIA q9												
+										j0 DEPART-VIA q10										
+											j0 DEPART-VIA q22									
+														j0 DEPART-VIA q28						
+																j0 DEPART-VIA q30				
+																	j0 DEPART-VIA out0.wl			
+30	j1 TASK-STOP 0 "W 10"																			
+	j1 TASK-START 1 "W 10"																			
+40	j1 TASK-STOP 1 "W 10"																			
+	j1 EXITS-SERVER 0																			
+	j1 DEPART-VIA q2																			
+			j1 DEPART-VIA q4																	
+					j1 DEPART-VIA q6															
+							j1 DEPART-VIA q8													
+									j1 DEPART-VIA q9											
+										j1 DEPART-VIA q15										
+													j1 DEPART-VIA out0.wl							
+220	j25 ENTERS-SERVER 0																			
+	j25 TASK-START 0 "W 10"																			
+230	j25 TASK-STOP 0 "W 10"																			
+	j25 TASK-START 1 "W 10"																			
+240	j25 TASK-STOP 1 "W 10"																			
+	j25 EXITS-SERVER 0																			
+	j25 DEPART-VIA q12																			
+												j25 DEPART-VIA q26								
+															j25 DEPART-VIA q41					
+																		j25 DEPART-VIA q47		
+																			j25 DEPART-VIA q49	
+																				j25 DEPART-VIA out0.wl
