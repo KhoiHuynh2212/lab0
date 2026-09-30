@@ -1,0 +1,2 @@
+# Packaged native evidence must retain its exact bytes.
+*.zip -text
