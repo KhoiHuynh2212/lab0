@@ -1,0 +1,94 @@
+{
+  "scope": "One full-size MEDIUM stressed-42 baseline; full 27-run study pending.",
+  "measurements": {
+    "command": [
+      "python",
+      "analysis/multi-common/scripts/analyze.py",
+      "--scale",
+      "MEDIUM",
+      "--run",
+      "stressed-42-+0",
+      "--output-root",
+      "analysis/multi-common/.build/medium-pilot-01"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 48.19165380000004,
+    "samples": 425,
+    "requested_sample_interval_seconds": 0.1,
+    "sampled_tree_peak_working_set_bytes": 400113664,
+    "sampled_tree_peak_private_bytes": 749285376,
+    "parent_peak_working_set_bytes": 130486272,
+    "observed_peak_working_set_by_executable": {
+      "python.exe": 282030080,
+      "git.exe": 9043968,
+      "test-E.exe": 6250496,
+      "test-filter-by-job.exe": 3350528,
+      "test-compute-use.exe": 2039808,
+      "test-derive-sys-metrics.exe": 4743168,
+      "multi-queue-sim.exe": 11124736,
+      "filter-by-queue.exe": 5513216,
+      "filter-by-job.exe": 5509120,
+      "derive-sys-metrics.exe": 5795840,
+      "derive-event-metrics.exe": 32821248,
+      "compute-use.exe": 5390336,
+      "unknown": 130486272
+    },
+    "tree_at_peak": [
+      {
+        "pid": 35376,
+        "executable": "python.exe",
+        "working_set_bytes": 129712128,
+        "peak_working_set_bytes": 130420736,
+        "private_bytes": 122904576
+      },
+      {
+        "pid": 38840,
+        "executable": "python.exe",
+        "working_set_bytes": 270401536,
+        "peak_working_set_bytes": 270401536,
+        "private_bytes": 265453568
+      }
+    ],
+    "method": "Windows Toolhelp process tree + GetProcessMemoryInfo, 100 ms requested interval. Tree peaks are sampled lower bounds; shared pages may be counted more than once. Per-process peaks are OS high-water values for observed processes; exited short children can be missed.",
+    "monitor_sha256": "8daed6d97818a6391b293dc4e00bc65e0826738b132010306be0b47a71d54123"
+  },
+  "artifact_audit": {
+    "raw_files": {
+      "job.log": {
+        "bytes": 26574586,
+        "sha256": "f93c20b4c301c7074ef9f9e84984087ae5373c413e4417843fab415c2b1d4863"
+      },
+      "qmet.csv": {
+        "bytes": 3460011,
+        "sha256": "34f87a93b40ca5cf253c8c4c51334f6e3bfc1c6ca81b7d22a3e0fb81d52bf71a"
+      },
+      "completed.wl": {
+        "bytes": 287417,
+        "sha256": "57a276871b3a37cbccd83516a21ba1242fbf83d71c93b6318ada2cf23256f0fb"
+      }
+    },
+    "raw_bytes": 30322014,
+    "unpacked_evidence_bytes": 68508023,
+    "output_tree_bytes": 90446301,
+    "archive_members_verified": 225,
+    "cache_hits": 13,
+    "cache_programs": 13,
+    "cold_compile_seconds": 77.552919,
+    "offered": 19879,
+    "completed": 19878,
+    "dropped": 1,
+    "fully_drained": true,
+    "visits": 143480,
+    "raw_compressed_member_bytes": 3739853,
+    "plot_compressed_member_bytes": 877790
+  },
+  "evidence": {
+    "local_path": "../multi-common/.build/medium-pilot-01/evidence.zip",
+    "team_url": null,
+    "sha256": "ac5ba3eb7150c3863faae30021b6311ba3337323044a24ea078298aa6e7dd4dc",
+    "bytes": 9069552,
+    "storage_status": "Retained locally in ignored scratch. Team-accessible storage not yet selected."
+  },
+  "validation": "40 focused tests; native fixture checks; MEDIUM accounting/C checks; all 225 archive members verified; extracted accounting/C visits/system rechecked.",
+  "memory_monitor_source": "import ctypes as c\nfrom ctypes import wintypes as w\nimport hashlib, json, subprocess, sys, time\nfrom pathlib import Path\n\n# Windows process-tree working sets sampled every 100 ms; no optional packages.\nk = c.WinDLL('kernel32', use_last_error=True)\np = c.WinDLL('psapi', use_last_error=True)\nclass Entry(c.Structure):\n    _fields_ = [('size', w.DWORD), ('usage', w.DWORD), ('pid', w.DWORD),\n                ('heap', c.c_size_t), ('module', w.DWORD), ('threads', w.DWORD),\n                ('parent', w.DWORD), ('priority', w.LONG), ('flags', w.DWORD),\n                ('exe', w.WCHAR * 260)]\nclass Memory(c.Structure):\n    _fields_ = [('cb', w.DWORD), ('faults', w.DWORD), ('peak', c.c_size_t),\n                ('working', c.c_size_t), ('peak_paged', c.c_size_t), ('paged', c.c_size_t),\n                ('peak_nonpaged', c.c_size_t), ('nonpaged', c.c_size_t),\n                ('pagefile', c.c_size_t), ('peak_pagefile', c.c_size_t), ('private', c.c_size_t)]\nk.CreateToolhelp32Snapshot.argtypes = [w.DWORD, w.DWORD]\nk.CreateToolhelp32Snapshot.restype = w.HANDLE\nk.Process32FirstW.argtypes = [w.HANDLE, c.POINTER(Entry)]\nk.Process32NextW.argtypes = [w.HANDLE, c.POINTER(Entry)]\nk.OpenProcess.argtypes = [w.DWORD, w.BOOL, w.DWORD]\nk.OpenProcess.restype = w.HANDLE\nk.CloseHandle.argtypes = [w.HANDLE]\np.GetProcessMemoryInfo.argtypes = [w.HANDLE, c.POINTER(Memory), w.DWORD]\n\ndef snapshot(root):\n    handle = k.CreateToolhelp32Snapshot(2, 0)\n    if handle == c.c_void_p(-1).value:\n        raise c.WinError(c.get_last_error())\n    entry, table = Entry(), {}\n    entry.size = c.sizeof(Entry)\n    try:\n        more = k.Process32FirstW(handle, c.byref(entry))\n        while more:\n            table[entry.pid] = (entry.parent, entry.exe)\n            more = k.Process32NextW(handle, c.byref(entry))\n    finally:\n        k.CloseHandle(handle)\n    selected = {root}\n    while True:\n        extra = {pid for pid, (parent, _) in table.items() if parent in selected} - selected\n        if not extra:\n            break\n        selected.update(extra)\n    result = []\n    for pid in selected:\n        handle = k.OpenProcess(0x0400 | 0x0010, False, pid)\n        if not handle:\n            continue  # Short-lived processes can exit between enumeration and sampling.\n        try:\n            mem = Memory()\n            mem.cb = c.sizeof(mem)\n            if p.GetProcessMemoryInfo(handle, c.byref(mem), c.sizeof(mem)):\n                result.append(dict(pid=pid, executable=table.get(pid, (0, 'unknown'))[1],\n                                   working_set_bytes=mem.working, peak_working_set_bytes=mem.peak,\n                                   private_bytes=mem.private))\n        finally:\n            k.CloseHandle(handle)\n    return result\n\nif __name__ == '__main__':\n    output = Path(sys.argv[1])\n    command = sys.argv[2:]\n    if output.exists():\n        raise SystemExit('Refusing measurement overwrite')\n    start = time.perf_counter()\n    process = subprocess.Popen(command)\n    peaks, maximum, maximum_private, peak_sample, samples, parent_peak = {}, 0, 0, [], 0, 0\n    while True:\n        rows = snapshot(process.pid)\n        samples += 1\n        total = sum(r['working_set_bytes'] for r in rows)\n        maximum_private = max(maximum_private, sum(r['private_bytes'] for r in rows))\n        if total > maximum:\n            maximum, peak_sample = total, rows\n        for row in rows:\n            peaks[row['executable']] = max(peaks.get(row['executable'], 0), row['peak_working_set_bytes'])\n            if row['pid'] == process.pid:\n                parent_peak = max(parent_peak, row['peak_working_set_bytes'])\n        if process.poll() is not None:\n            break\n        time.sleep(.1)\n    report = dict(command=command, exit_code=process.returncode,\n                  elapsed_seconds=time.perf_counter()-start, samples=samples,\n                  requested_sample_interval_seconds=.1,\n                  sampled_tree_peak_working_set_bytes=maximum,\n                  sampled_tree_peak_private_bytes=maximum_private,\n                  parent_peak_working_set_bytes=parent_peak,\n                  observed_peak_working_set_by_executable=peaks, tree_at_peak=peak_sample,\n                  method='Windows Toolhelp process tree + GetProcessMemoryInfo, 100 ms requested interval. '\n                         'Tree peaks are sampled lower bounds; shared pages may be counted more than once. '\n                         'Per-process peaks are OS high-water values for observed processes; exited short children can be missed.',\n                  monitor_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest())\n    output.write_text(json.dumps(report, indent=2)+'\\n', encoding='utf-8')\n    print(json.dumps(report, indent=2), flush=True)\n    sys.exit(process.returncode)\n"
+}

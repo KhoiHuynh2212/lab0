@@ -1,0 +1,55 @@
+{
+  "command": [
+    "python",
+    "analysis/multi-common/scripts/analyze.py",
+    "--scale",
+    "LARGE",
+    "--run",
+    "stressed-42-+0",
+    "--output-root",
+    "analysis/multi-common/.build/large-pilot-01"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 1246.9817715,
+  "samples": 9462,
+  "requested_sample_interval_seconds": 0.1,
+  "sampled_tree_peak_working_set_bytes": 8642301952,
+  "sampled_tree_peak_private_bytes": 8710029312,
+  "parent_peak_working_set_bytes": 2264842240,
+  "observed_peak_working_set_by_executable": {
+    "python.exe": 6512455680,
+    "git.exe": 9375744,
+    "test-E.exe": 6426624,
+    "test-filter-by-queue.exe": 5836800,
+    "test-filter-by-job.exe": 5632000,
+    "test-compute-use.exe": 5877760,
+    "test-derive-event-metrics.exe": 5611520,
+    "test-derive-sys-metrics.exe": 5906432,
+    "simple-queue-sim.exe": 2043904,
+    "filter-by-job.exe": 5677056,
+    "compute-use.exe": 5545984,
+    "derive-event-metrics.exe": 442040320,
+    "multi-queue-sim.exe": 72237056,
+    "derive-sys-metrics.exe": 10817536,
+    "filter-by-queue.exe": 5644288,
+    "unknown": 2264842240
+  },
+  "tree_at_peak": [
+    {
+      "pid": 40064,
+      "executable": "python.exe",
+      "working_set_bytes": 6470041600,
+      "peak_working_set_bytes": 6512455680,
+      "private_bytes": 6495645696
+    },
+    {
+      "pid": 21516,
+      "executable": "python.exe",
+      "working_set_bytes": 2172260352,
+      "peak_working_set_bytes": 2264842240,
+      "private_bytes": 2169085952
+    }
+  ],
+  "method": "Windows Toolhelp process tree + GetProcessMemoryInfo, 100 ms requested interval. Tree peaks are sampled lower bounds; shared pages may be counted more than once. Per-process peaks are OS high-water values for observed processes; exited short children can be missed.",
+  "monitor_sha256": "8daed6d97818a6391b293dc4e00bc65e0826738b132010306be0b47a71d54123"
+}
