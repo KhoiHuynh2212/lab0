@@ -12,12 +12,12 @@ Each objective has its own section below. As more parts of the lab are added, th
 
 - [🔬 Lab 0](#-lab-0)
 - [🏁 Quick Start](#-quick-start)
-  - [Build Objective A](#build-objective-a)
-  - [Test Objective A](#test-objective-a)
-  - [Build Objective B](#build-objective-b)
-  - [Test Objective B](#test-objective-b)
-  - [Clean Objective A and Objective B](#clean-objective-a-and-objective-b)
-  - [Future Objective Commands](#future-objective-commands)
+  - [Build and Test Objective A](#build-and-test-objective-a)
+  - [Build and Test Objective B](#build-and-test-objective-b)
+  - [Build and Test Objective C](#build-and-test-objective-c)
+  - [Review Objective D](#review-objective-d)
+  - [Build and Test Objective E](#build-and-test-objective-e)
+  - [Clean Built Components](#clean-built-components)
 - [🌳 Directory](#-directory)
 - [🧰 Objective A: Workloads](#-objective-a-workloads)
   - [Workload Format](#workload-format)
@@ -44,6 +44,7 @@ Each objective has its own section below. As more parts of the lab are added, th
   - [Objective D Documentation](#objective-d-documentation)
 - [🌐 Objective E: Multi Queueing System](#-objective-e-multi-queueing-system)
   - [Objective E Main Pieces](#objective-e-main-pieces)
+  - [Objective E Commands](#objective-e-commands)
   - [Objective E Analysis](#objective-e-analysis)
   - [Objective E Documentation](#objective-e-documentation)
 - [🔄 How the Objectives Connect](#-how-the-objectives-connect)
@@ -58,7 +59,9 @@ Each objective has its own section below. As more parts of the lab are added, th
   - [Workload Generator Only](#workload-generator-only)
   - [Workload Visualizer Only](#workload-visualizer-only)
   - [Objective B Simple Queue Simulator](#objective-b-simple-queue-simulator)
-  - [Objectives C, D, and E](#objectives-c-d-and-e)
+  - [Objective C Tools](#objective-c-tools)
+  - [Objective D Analysis](#objective-d-analysis)
+  - [Objective E Multi Queue Tools](#objective-e-multi-queue-tools)
 - [📚 Documentation](#-documentation)
 - [🔗 Links](#-links)
 - [👥 Group 2](#-group-2)
@@ -73,55 +76,82 @@ All commands in this README are written as if they are run from the repository r
 lab0/
 ```
 
-## Build Objective A
+## Build and Test Objective A
 
 ```bash
 make -C implementation/obj-a build
-```
-
-This builds:
-
-```txt
-implementation/obj-a/workload-generator/workload-generator
-implementation/obj-a/workload-visualizer/workload-visualizer
-```
-
-## Test Objective A
-
-```bash
 make -C implementation/obj-a test
 ```
 
-## Build Objective B
+This builds the workload generator and workload visualizer. The test suite also has coverage and Valgrind modes; see the [Objective A command reference](#objective-a-as-a-whole).
+
+## Build and Test Objective B
 
 ```bash
 make -C implementation/obj-b/simple-queue-sim build
-```
-
-This builds:
-
-```txt
-implementation/obj-b/simple-queue-sim/simple-queue-sim
-```
-
-## Test Objective B
-
-```bash
 make -C implementation/obj-b/simple-queue-sim test
 ```
 
-The test targets use Valgrind, so Valgrind must be installed before running the leak tests.
+This builds `implementation/obj-b/simple-queue-sim/simple-queue-sim`. The test target uses Valgrind.
 
-## Clean Objective A and Objective B
+## Build and Test Objective C
+
+Objective C has one Makefile per tool. Build or test the tool you are working on from the repository root:
+
+```bash
+make -C implementation/obj-c/compute-use build
+make -C implementation/obj-c/derive-sys-metrics build
+make -C implementation/obj-c/derive-event-metrics build
+make -C implementation/obj-c/plot-sys-metrics build
+```
+
+The same pattern works for every Objective C directory. A complete list is in [Objective C Commands](#objective-c-commands) and [Objective C Tools](#objective-c-tools).
+
+## Review Objective D
+
+The completed single-queue car-wash study is documented in:
+
+- [Objective D analysis](/analysis/simple/README.md)
+- [Objective D results guide](/analysis/simple/results/analysis/README.md)
+
+The Objective D unit tests can be run with:
+
+```bash
+python -m unittest discover -s analysis/simple/tests -v
+```
+
+## Build and Test Objective E
+
+Objective E has one top-level Makefile for the multi-queue simulator and its Python tools:
+
+```bash
+make -C implementation/obj-e build
+make -C implementation/obj-e test
+```
+
+The build produces:
+
+```txt
+implementation/obj-e/multi-queue-sim/multi-queue-sim
+```
+
+The full Objective E test target runs the C++ simulator tests through Valgrind and then runs the Python tool tests.
+
+## Clean Built Components
 
 ```bash
 make -C implementation/obj-a clean
 make -C implementation/obj-b/simple-queue-sim clean
+
+for tool in \
+    compute-use create-event-trace derive-event-metrics derive-sys-metrics \
+    filter-by-job filter-by-queue plot-derive-event-metrics plot-sys-metrics plot-use
+do
+    make -C "implementation/obj-c/$tool" clean
+done
+
+make -C implementation/obj-e clean
 ```
-
-## Future Objective Commands
-
-Add the main build, test, and clean commands here as Objectives C, D, and E gain runnable programs or lab-level scripts.
 
 ---
 
@@ -136,6 +166,7 @@ The repository keeps designs, examples, implementations, and analysis separate s
 │   ├── multi-LARGE
 │   ├── multi-MEDIUM
 │   ├── multi-SMALL
+│   ├── multi-common
 │   └── simple
 ├── designs
 │   ├── obj-a
@@ -199,7 +230,7 @@ The top-level directories have these jobs:
 |    `/analysis/`    | Results and analysis from queue experiments.                 |
 |    `/designs/`     | Pseudocode, design notes, formats, and worked examples.      |
 |    `/examples/`    | Example input files, output files, and small demonstrations. |
-| `/implementation/` | C++ programs, Makefiles, and automated tests.                |
+| `/implementation/` | Programs, Python tools, Makefiles, and automated tests.      |
 |      `/lab/`       | Lab-wide scripts and documents.                              |
 
 > Remove `.gitkeep` files after a blank directory begins containing real files.
@@ -364,9 +395,11 @@ The simulator also tracks errors such as a full queue or a job that has no usabl
 - [Obj-B overview](/implementation/obj-b/README.md)
 - [Simple Queue Simulator run guide](/implementation/obj-b/simple-queue-sim/README.md)
 - [Simple Queue Simulator design](/designs/obj-b/simple-queue-sim/README.md)
-- [Obj-B examples](/examples/obj-b/README.md)
-- [Dr. Veras's `q_ex-1.py`](/examples/obj-b/q_ex-1.py)
-- [`q_ex-1.py` explained](/examples/obj-b/q_ex-1_explained.md)
+- [Obj-B example files](/examples/obj-b/)
+- [Example source workload](/examples/obj-b/in0.wl)
+- [Example queue configuration](/examples/obj-b/simple-queue-config-demo.csv)
+- [Example queue metrics](/examples/obj-b/qmet-demo.csv)
+- [Example event log](/examples/obj-b/events-demo.log)
 
 ## Queue Configuration Format
 
@@ -451,7 +484,7 @@ queue configuration → simple-queue-sim → sink workload
 
 Objective C contains the tools used to filter simulator output and turn queue metrics and event logs into information that is easier to analyze.
 
-The repository has space for these tools:
+Objective C contains these tools:
 
 ```txt
 implementation/obj-c/
@@ -478,19 +511,39 @@ The tools fall into a few main groups:
 
 ## Objective C Documentation
 
-> TECH LEAD TODO: add links here as each Objective C README and example guide is written.
+Start with the [Objective C design overview](/designs/obj-c/README.md), which shows how `qmet.csv` and `job.log` feed the nine analysis tools.
 
-Suggested locations:
+| Tool                        |                        Implementation guide                         |                            Design                            |
+| :-------------------------- | :-----------------------------------------------------------------: | :----------------------------------------------------------: |
+| `filter-by-queue`           |      [README](/implementation/obj-c/filter-by-queue/README.md)      |      [Design](/designs/obj-c/filter-by-queue/README.md)      |
+| `filter-by-job`             |       [README](/implementation/obj-c/filter-by-job/README.md)       |       [Design](/designs/obj-c/filter-by-job/README.md)       |
+| `compute-use`               |        [README](/implementation/obj-c/compute-use/README.md)        |        [Design](/designs/obj-c/compute-use/README.md)        |
+| `plot-use`                  |         [README](/implementation/obj-c/plot-use/README.md)          |         [Design](/designs/obj-c/plot-use/README.md)          |
+| `derive-sys-metrics`        |    [README](/implementation/obj-c/derive-sys-metrics/README.md)     |    [Design](/designs/obj-c/derive-sys-metrics/README.md)     |
+| `plot-sys-metrics`          |     [README](/implementation/obj-c/plot-sys-metrics/README.md)      |     [Design](/designs/obj-c/plot-sys-metrics/README.md)      |
+| `derive-event-metrics`      |   [README](/implementation/obj-c/derive-event-metrics/README.md)    |   [Design](/designs/obj-c/derive-event-metrics/README.md)    |
+| `plot-derive-event-metrics` | [README](/implementation/obj-c/plot-derive-event-metrics/README.md) | [Design](/designs/obj-c/plot-derive-event-metrics/README.md) |
+| `create-event-trace`        |    [README](/implementation/obj-c/create-event-trace/README.md)     |    [Design](/designs/obj-c/create-event-trace/README.md)     |
 
-```txt
-/designs/obj-c/
-/examples/obj-c/
-/implementation/obj-c/
-```
+Small CSV inputs for the plotting tools are in [`/examples/obj-c/`](/examples/obj-c/).
 
 ## Objective C Commands
 
-> TECH LEAD TODO: keep the main run commands here and link each tool to its complete README once the command-line interfaces are finalized.
+Each tool can be built from the repository root with `make -C implementation/obj-c/<tool> build`. The most common run forms are:
+
+|            Tool             | Common command                                                                                                                   |
+| :-------------------------: | :------------------------------------------------------------------------------------------------------------------------------- |
+|      `filter-by-queue`      | `implementation/obj-c/filter-by-queue/filter-by-queue qmet.csv q0.csv --queues=q0`                                               |
+|       `filter-by-job`       | `implementation/obj-c/filter-by-job/filter-by-job job.log j0.log --jobs=j0`                                                      |
+|        `compute-use`        | `implementation/obj-c/compute-use/compute-use qmet.csv quse.csv`                                                                 |
+|         `plot-use`          | `implementation/obj-c/plot-use/plot-use quse.csv use-plots`                                                                      |
+|    `derive-sys-metrics`     | `implementation/obj-c/derive-sys-metrics/derive-sys-metrics job.log sysmetric.csv`                                               |
+|     `plot-sys-metrics`      | `implementation/obj-c/plot-sys-metrics/plot-sys-metrics sysmetric.csv system.png`                                                |
+|   `derive-event-metrics`    | `implementation/obj-c/derive-event-metrics/derive-event-metrics job.log emetric.csv`                                             |
+| `plot-derive-event-metrics` | `implementation/obj-c/plot-derive-event-metrics/plot-derive-event-metrics emetric.csv wait.png --hist="response-time" --bins=20` |
+|    `create-event-trace`     | `implementation/obj-c/create-event-trace/create-event-trace job.log trace.png`                                                   |
+
+The C++ tools provide coverage and leak-test targets where their Makefiles define them. The Python plotting/tracing tools use `build`, `test`, and `clean` targets and require `matplotlib`.
 
 ---
 
@@ -540,7 +593,14 @@ This section should grow to document:
 
 ## Objective D Documentation
 
-> TECH LEAD TODO: add the final single-queue model, experiment commands, plots, and analysis links here.
+The current single-queue study models a car wash with one FIFO waiting line and one or more wash bays. The analysis documents the model assumptions, workload generation, experiment matrix, validation, Objective C outputs, plots, and sensitivity study.
+
+- [Objective D: Car Wash Modeling and Analysis](/analysis/simple/README.md)
+- [Saved analysis results and interpretation](/analysis/simple/results/analysis/README.md)
+- [Experiment matrix](/analysis/simple/experiments.csv)
+- [Configuration template](/analysis/simple/configs/carwash-template.csv)
+
+The analysis README contains the reproduction command and explains which results are measured directly, which values are derived, and where the supplied Objective C tools have measurement limitations.
 
 ---
 
@@ -548,7 +608,7 @@ This section should grow to document:
 
 Objective E extends the queueing work to multiple connected queue systems.
 
-The repository has space for:
+Objective E is organized as:
 
 ```txt
 designs/obj-e/
@@ -566,23 +626,91 @@ examples/obj-e/
 
 ## Objective E Main Pieces
 
-- **Multi Queue Simulator**: runs connected queue systems.
-- **Event Pretty Printer**: makes large event logs easier to read.
-- **Network Config Generator**: builds queue configuration data from a network description.
+- **Multi Queue Simulator**: runs all queue-system rows together and routes jobs over configured edges.
+- **Event Pretty Printer**: lays out `job.log` by time and queue so multi-queue behavior is easier to follow.
+- **Network Config Generator**: converts a SNAP-style edge list or Matrix Market `.mtx` file into a queue configuration CSV.
+
+## Objective E Commands
+
+Build and test the Objective E tools:
+
+```bash
+make -C implementation/obj-e build
+make -C implementation/obj-e test
+```
+
+Generate a queue configuration from the included network example:
+
+```bash
+python3 implementation/obj-e/create-config-from-network/create-config-from-network.py     examples/obj-e/network-demo.mtx     qconf.csv
+```
+
+Run the multi-queue simulator with a configuration whose source workload files exist:
+
+```bash
+implementation/obj-e/multi-queue-sim/multi-queue-sim     qconf.csv     --metrics qmet.csv     --events job.log
+```
+
+The simulator also accepts an optional positional time limit or `--time-limit N`. Source and sink paths in the configuration are resolved relative to the configuration file.
+
+Pretty-print an event log:
+
+```bash
+python3 implementation/obj-e/pretty-print-events/pretty-print-events.py     job.log     --legend
+```
+
+Use `--help` with either Python tool to see its full option list. The simulator's command form is:
+
+```txt
+multi-queue-sim CONFIG [TIME_LIMIT] [--time-limit N] [--metrics FILE] [--events FILE]
+```
 
 ## Objective E Analysis
 
-Multi-queue results can be kept at different workload sizes in:
+Multi-queue analysis is split by scale, with shared workflow material in `multi-common`:
 
-```txt
-analysis/multi-SMALL/
-analysis/multi-MEDIUM/
-analysis/multi-LARGE/
-```
+- [Shared multi-queue workflow](/analysis/multi-common/README.md)
+- [SMALL-scale study](/analysis/multi-SMALL/README.md)
+- [MEDIUM-scale study](/analysis/multi-MEDIUM/README.md)
+- [LARGE-scale study](/analysis/multi-LARGE/README.md)
 
 ## Objective E Documentation
 
-> TECH LEAD TODO: add the main Objective E run commands, configuration examples, and README links here as those interfaces are finalized.
+- [Objective E design overview](/designs/obj-e/README.md)
+- [Multi Queue Simulator design](/designs/obj-e/multi-queue-sim/README.md)
+- [Event Pretty Printer design](/designs/obj-e/pretty-print-events/README.md)
+- [Network Config Generator design](/designs/obj-e/create-config-from-network/README.md)
+- [Objective E implementation directory](/implementation/obj-e/)
+- [Objective E example network](/examples/obj-e/network-demo.mtx)
+
+The network generator feeds the simulator configuration, the simulator produces `qmet.csv` and `job.log`, and the pretty printer is a debugging view of the event log:
+
+```txt
+┌────────────────────┐
+│ network edge list  │
+└─────────┬──────────┘
+          ↓
+┌────────────────────┐
+│ create-config-     │
+│ from-network       │
+└─────────┬──────────┘
+          ↓
+┌────────────────────┐
+│ queue config CSV   │
+└─────────┬──────────┘
+          │ + source workloads
+          ↓
+┌────────────────────┐
+│ multi-queue-sim    │
+└──────┬─────────┬───┘
+       ↓         ↓
+   qmet.csv    job.log
+                 │
+                 ↓
+        ┌────────────────────┐
+        │ pretty-print-events│
+        └────────────────────┘
+```
 
 ---
 
@@ -760,9 +888,45 @@ These commands are run from the repository root.
 | `implementation/obj-b/simple-queue-sim/run-all-tests.sh leak`      | Run leak mode directly.                   |
 | `implementation/obj-b/simple-queue-sim/simple-queue-sim --help`    | Show simulator command-line help.         |
 
-## Objectives C, D, and E
+## Objective C Tools
 
-> TECH LEAD TODO: add each objective's build, clean, test, and main run commands here as their command-line interfaces are finalized.
+Objective C does not have one umbrella Makefile, so commands are run in the individual tool directories.
+
+|            Tool             | Build                                                          | Test                                                          |
+| :-------------------------: | :------------------------------------------------------------- | :------------------------------------------------------------ |
+|      `filter-by-queue`      | `make -C implementation/obj-c/filter-by-queue build`           | `make -C implementation/obj-c/filter-by-queue test`           |
+|       `filter-by-job`       | `make -C implementation/obj-c/filter-by-job build`             | `make -C implementation/obj-c/filter-by-job test`             |
+|        `compute-use`        | `make -C implementation/obj-c/compute-use build`               | `make -C implementation/obj-c/compute-use test`               |
+|         `plot-use`          | `make -C implementation/obj-c/plot-use build`                  | `make -C implementation/obj-c/plot-use test`                  |
+|    `derive-sys-metrics`     | `make -C implementation/obj-c/derive-sys-metrics build`        | `make -C implementation/obj-c/derive-sys-metrics test`        |
+|     `plot-sys-metrics`      | `make -C implementation/obj-c/plot-sys-metrics build`          | `make -C implementation/obj-c/plot-sys-metrics test`          |
+|   `derive-event-metrics`    | `make -C implementation/obj-c/derive-event-metrics build`      | `make -C implementation/obj-c/derive-event-metrics test`      |
+| `plot-derive-event-metrics` | `make -C implementation/obj-c/plot-derive-event-metrics build` | `make -C implementation/obj-c/plot-derive-event-metrics test` |
+|    `create-event-trace`     | `make -C implementation/obj-c/create-event-trace build`        | `make -C implementation/obj-c/create-event-trace test`        |
+
+For C++ Objective C tools that define them, use `run-tests-coverage` and `run-tests-leak` in the same way as `test`.
+
+## Objective D Analysis
+
+| Command                                                                                                     | Description                                               |
+| :---------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------- |
+| `python -m unittest discover -s analysis/simple/tests -v`                                                   | Run the Objective D analysis tests.                       |
+| `python analysis/simple/scripts/analyze_results.py --output-root analysis/simple/.build/analysis-replay-01` | Reproduce the saved analysis into a new output directory. |
+
+See [Objective D analysis](/analysis/simple/README.md) before running the full reproduction workflow; it documents dependencies, saved evidence, and output-directory rules.
+
+## Objective E Multi Queue Tools
+
+| Command                                           | Description                                             |
+| :------------------------------------------------ | :------------------------------------------------------ |
+| `make -C implementation/obj-e`                    | Build the multi-queue simulator.                        |
+| `make -C implementation/obj-e build`              | Rebuild the multi-queue simulator.                      |
+| `make -C implementation/obj-e clean`              | Remove Objective E build/test output.                   |
+| `make -C implementation/obj-e test`               | Run C++ Valgrind tests and Python tool tests.           |
+| `make -C implementation/obj-e run-tests-coverage` | Run C++ gcov and Python coverage when available.        |
+| `make -C implementation/obj-e run-tests-leak`     | Run the C++ simulator leak tests.                       |
+| `make -C implementation/obj-e check-python`       | Check that both Python tools exist and parse correctly. |
+| `make -C implementation/obj-e test-python`        | Run the pretty-printer Python unit tests.               |
 
 For detailed Objective A and Objective B commands, see:
 
@@ -774,30 +938,31 @@ For detailed Objective A and Objective B commands, see:
 
 # 📚 Documentation
 
-This table is the main index for the documentation that already has a README or explanation file.
+This table is the main index for the repository's detailed guides.
 
-| Topic                      | File                                                                                                         |
-| :------------------------- | :----------------------------------------------------------------------------------------------------------- |
-| Objective A overview       | [`/implementation/obj-a/README.md`](/implementation/obj-a/README.md)                                         |
-| Generator commands         | [`/implementation/obj-a/workload-generator/README.md`](/implementation/obj-a/workload-generator/README.md)   |
-| Visualizer commands        | [`/implementation/obj-a/workload-visualizer/README.md`](/implementation/obj-a/workload-visualizer/README.md) |
-| Objective A design         | [`/designs/obj-a/README.md`](/designs/obj-a/README.md)                                                       |
-| Objective A examples       | [`/examples/obj-a/README.md`](/examples/obj-a/README.md)                                                     |
-| Objective B overview       | [`/implementation/obj-b/README.md`](/implementation/obj-b/README.md)                                         |
-| Simulator commands         | [`/implementation/obj-b/simple-queue-sim/README.md`](/implementation/obj-b/simple-queue-sim/README.md)       |
-| Simulator design           | [`/designs/obj-b/simple-queue-sim/README.md`](/designs/obj-b/simple-queue-sim/README.md)                     |
-| Objective B examples       | [`/examples/obj-b/README.md`](/examples/obj-b/README.md)                                                     |
-| Provided queue example     | [`/examples/obj-b/q_ex-1_explained.md`](/examples/obj-b/q_ex-1_explained.md)                                 |
-| Objective C designs        | [`/designs/obj-c/`](/designs/obj-c/)                                                                         |
-| Objective C examples       | [`/examples/obj-c/`](/examples/obj-c/)                                                                       |
-| Objective C implementation | [`/implementation/obj-c/`](/implementation/obj-c/)                                                           |
-| Single-queue analysis      | [`/analysis/simple/`](/analysis/simple/)                                                                     |
-| Objective E designs        | [`/designs/obj-e/`](/designs/obj-e/)                                                                         |
-| Objective E examples       | [`/examples/obj-e/`](/examples/obj-e/)                                                                       |
-| Objective E implementation | [`/implementation/obj-e/`](/implementation/obj-e/)                                                           |
-| Multi-queue analysis       | [`/analysis/`](/analysis/)                                                                                   |
-
-> TECH LEAD TODO: As Objectives C, D, and E gain their own README files, add the direct links to this table and to their objective sections above.
+| Topic                             | File                                                                                                         |
+| :-------------------------------- | :----------------------------------------------------------------------------------------------------------- |
+| Objective A overview              | [`/implementation/obj-a/README.md`](/implementation/obj-a/README.md)                                         |
+| Workload Generator commands       | [`/implementation/obj-a/workload-generator/README.md`](/implementation/obj-a/workload-generator/README.md)   |
+| Workload Visualizer commands      | [`/implementation/obj-a/workload-visualizer/README.md`](/implementation/obj-a/workload-visualizer/README.md) |
+| Objective A designs               | [`/designs/obj-a/README.md`](/designs/obj-a/README.md)                                                       |
+| Objective A examples              | [`/examples/obj-a/README.md`](/examples/obj-a/README.md)                                                     |
+| Objective B overview              | [`/implementation/obj-b/README.md`](/implementation/obj-b/README.md)                                         |
+| Simple Queue Simulator commands   | [`/implementation/obj-b/simple-queue-sim/README.md`](/implementation/obj-b/simple-queue-sim/README.md)       |
+| Simple Queue Simulator design     | [`/designs/obj-b/simple-queue-sim/README.md`](/designs/obj-b/simple-queue-sim/README.md)                     |
+| Objective B example files         | [`/examples/obj-b/`](/examples/obj-b/)                                                                       |
+| Objective C design overview       | [`/designs/obj-c/README.md`](/designs/obj-c/README.md)                                                       |
+| Objective C implementations       | [`/implementation/obj-c/`](/implementation/obj-c/)                                                           |
+| Objective C example data          | [`/examples/obj-c/`](/examples/obj-c/)                                                                       |
+| Objective D single-queue analysis | [`/analysis/simple/README.md`](/analysis/simple/README.md)                                                   |
+| Objective D results guide         | [`/analysis/simple/results/analysis/README.md`](/analysis/simple/results/analysis/README.md)                 |
+| Objective E design overview       | [`/designs/obj-e/README.md`](/designs/obj-e/README.md)                                                       |
+| Objective E implementations       | [`/implementation/obj-e/`](/implementation/obj-e/)                                                           |
+| Objective E network example       | [`/examples/obj-e/network-demo.mtx`](/examples/obj-e/network-demo.mtx)                                       |
+| Multi-queue shared workflow       | [`/analysis/multi-common/README.md`](/analysis/multi-common/README.md)                                       |
+| SMALL multi-queue study           | [`/analysis/multi-SMALL/README.md`](/analysis/multi-SMALL/README.md)                                         |
+| MEDIUM multi-queue study          | [`/analysis/multi-MEDIUM/README.md`](/analysis/multi-MEDIUM/README.md)                                       |
+| LARGE multi-queue study           | [`/analysis/multi-LARGE/README.md`](/analysis/multi-LARGE/README.md)                                         |
 
 ---
 

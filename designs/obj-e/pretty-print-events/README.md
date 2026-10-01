@@ -1,10 +1,10 @@
-# 🧾 Pretty-Print Events Design
+# Pretty-Print Events Design
 
 `pretty-print-events` turns a simulator `job.log` into a table with time down the left side and one column per queue system. It is a debugging view: the event log stays the source of truth, while the table makes cross-queue behavior easier to follow.
 
 ---
 
-# 🎯 Purpose
+# Purpose
 
 A multi-queue event log can contain many events at one timestep. Reading it line-by-line makes it hard to see which queue each event belongs to. The pretty printer places events into queue columns while preserving the important order constraints.
 
@@ -25,7 +25,7 @@ A multi-queue event log can contain many events at one timestep. Reading it line
 
 ---
 
-# 📥 Event Format
+# Event Format
 
 A parsable line looks like:
 
@@ -47,7 +47,7 @@ Blank lines are ignored. Nonblank lines that do not match the event pattern are 
 
 ---
 
-# 🧹 Filtering
+# Filtering
 
 Before layout, the caller may filter by:
 
@@ -63,7 +63,7 @@ Queue columns normally use every queue found in the selected events and sort nat
 
 ---
 
-# 🧠 Row-Packing Pseudocode
+# Row-Packing Pseudocode
 
 The default mode tries to place independent events from the same timestep on the same visual row.
 
@@ -99,7 +99,7 @@ With `--sequential`, packing is disabled and each event gets its own row.
 
 ---
 
-# 🧪 Worked Example
+# Worked Example
 
 Input:
 
@@ -122,7 +122,7 @@ time  q0                    q1
 
 ---
 
-# 📤 Output Formats
+# Output Formats
 
 ## Terminal table
 
@@ -138,7 +138,7 @@ The table can use ANSI color depending on `--color auto|always|never`. Long cell
 
 ---
 
-# ⚠️ Edge Cases
+# Edge Cases
 
 - If `--from` is greater than `--to`, fail instead of producing a misleading empty range.
 - If no events match, print no table and report `no events to show` on stderr.
@@ -149,7 +149,7 @@ The table can use ANSI color depending on `--color auto|always|never`. Long cell
 
 ---
 
-# 🔗 Resources and Connections
+# Resources and Connections
 
 - [Implementation and complete CLI](/implementation/obj-e/pretty-print-events/README.md)
 - [Multi-queue simulator design](/designs/obj-e/multi-queue-sim/README.md)
