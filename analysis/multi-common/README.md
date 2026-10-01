@@ -12,7 +12,7 @@ Compute each node's shortest distance `d` to a selected exit. Retain only origin
 
 A vehicle entering at distance `d` has one task `W (d+1)`. Each queue uses **`Sub-1` without `*`**. Each serviced visit removes one work unit, so the final unit is processed at the exit. For example:
 
-```text
+```txt
 q0, distance 2       q1, distance 1       q2, distance 0
 arrive with W 3  ->  arrive with W 2  ->  arrive with W 1  ->  completed.wl
 ```
@@ -23,16 +23,16 @@ All job IDs start with lowercase `j`, matching A's usual output and C's job-filt
 
 ## Files and evidence
 
-| File | Purpose |
-|---|---|
-| [scripts/support.py](scripts/support.py) | Orient/validate graphs, write inputs, reconcile events and occupancy, check C measurements, and package/verify archives |
-| [scripts/run.py](scripts/run.py) | Build pinned unchanged tools in scratch, run fixtures, record provenance, and replay saved raw evidence |
-| [scripts/prepare.py](scripts/prepare.py) | Normalize/sample Texas roads, invoke A and E, generate paired workloads/resource manifests, and measure feasibility pilots |
-| [scripts/analyze.py](scripts/analyze.py) | Execute scale experiments, validate all runs, demonstrate all 9 C tools, generate consolidated summaries and HTML reports |
-| [source.json](source.json) | Dataset provenance, frozen preparation rules, workload counts/hashes, pilot measurements and execution record |
-| [tests/test_pipeline.py](tests/test_pipeline.py) | Reject invalid models, corrupted events/counts/configurations, misleading C outputs and unsafe/corrupt archives |
-| [validation.zip](validation.zip) | One archive containing native evidence, model inputs, analysis copies, checks, commands and member hashes |
-| `.gitignore` / `.gitattributes` | Keep builds/extractions/pilots ignored and preserve archive bytes |
+| File                                             | Purpose                                                                                                                    |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| [scripts/support.py](scripts/support.py)         | Orient/validate graphs, write inputs, reconcile events and occupancy, check C measurements, and package/verify archives    |
+| [scripts/run.py](scripts/run.py)                 | Build pinned unchanged tools in scratch, run fixtures, record provenance, and replay saved raw evidence                    |
+| [scripts/prepare.py](scripts/prepare.py)         | Normalize/sample Texas roads, invoke A and E, generate paired workloads/resource manifests, and measure feasibility pilots |
+| [scripts/analyze.py](scripts/analyze.py)         | Execute scale experiments, validate all runs, demonstrate all 9 C tools, generate consolidated summaries and HTML reports  |
+| [source.json](source.json)                       | Dataset provenance, frozen preparation rules, workload counts/hashes, pilot measurements and execution record              |
+| [tests/test_pipeline.py](tests/test_pipeline.py) | Reject invalid models, corrupted events/counts/configurations, misleading C outputs and unsafe/corrupt archives            |
+| [validation.zip](validation.zip)                 | One archive containing native evidence, model inputs, analysis copies, checks, commands and member hashes                  |
+| `.gitignore` / `.gitattributes`                  | Keep builds/extractions/pilots ignored and preserve archive bytes                                                          |
 
 The archive contains `execution.json`, a `checksums.json` member index, eight small model cases and one separate diagnostic. Each case includes its model, source/configuration, raw `job.log`/`qmet.csv`/sink, validation result, adapter record, and native C outputs. These are archive members, not separate tracked files. Copied sources, binaries, temporary test data and failed pilots stay in `.build/` and are not archived.
 
@@ -42,16 +42,16 @@ The execution record identifies the resolved source commit, source hashes, F scr
 
 All listed times are steps. Fixtures use small capacities/service rates to expose behavior, not final traffic-study parameters. The fixture definitions contain independent expected completion/drop times.
 
-| Case | Expected behavior |
-|---|---|
-| Single queue | Three jobs complete at 2/4/6; E and B produce identical raw files |
-| Three-node path | Two jobs complete at 3/4 after three serviced visits each; C must report six visits |
-| Reversed configuration rows | Reordering the same path's queue rows preserves its checked outcomes |
-| Branching | Four jobs alternate q1/q2 and complete at 3/3/4/4; validates tied sink statistics |
-| Downstream loss | One completion at 4, two downstream drops at 1/2; earlier work on dropped jobs remains in accounting |
-| Multiple boundaries | Two disjoint source job sets reach two exits at 2; E merges their shared sink without losing jobs |
-| Time limit | At boundary 2, two jobs are unfinished and one scheduled at 8 is unarrived; no final completion yet |
-| Window history | One drop at 0 and an idle observation through 1001; errors expire from the 10/100/1000-step windows at the expected boundaries |
+| Case                        | Expected behavior                                                                                                              |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Single queue                | Three jobs complete at 2/4/6; E and B produce identical raw files                                                              |
+| Three-node path             | Two jobs complete at 3/4 after three serviced visits each; C must report six visits                                            |
+| Reversed configuration rows | Reordering the same path's queue rows preserves its checked outcomes                                                           |
+| Branching                   | Four jobs alternate q1/q2 and complete at 3/3/4/4; validates tied sink statistics                                              |
+| Downstream loss             | One completion at 4, two downstream drops at 1/2; earlier work on dropped jobs remains in accounting                           |
+| Multiple boundaries         | Two disjoint source job sets reach two exits at 2; E merges their shared sink without losing jobs                              |
+| Time limit                  | At boundary 2, two jobs are unfinished and one scheduled at 8 is unarrived; no final completion yet                            |
+| Window history              | One drop at 0 and an idle observation through 1001; errors expire from the 10/100/1000-step windows at the expected boundaries |
 
 The event ledger checks actual configurations/workloads against the model, every source arrival, active visit, task work/timing, server entry/exit, transfer, loss and sink completion. At every metric timestamp it reconstructs waiting, busy servers and cumulative errors and compares them with E's original snapshots. A fabricated arrival cannot conceal a lost transfer: the raw-state checks fail.
 
@@ -90,7 +90,7 @@ Five C++ C tools are exercised here: both filters, `compute-use`, `derive-event-
 
 Requirements: Python 3.10+, Git containing the recorded commit, and a C++20 GCC compiler available as `g++` (or through `CXX`). Plotting packages are not needed for these checks. Run from the repository root containing `analysis/` and `implementation/`.
 
-```text
+```txt
 python analysis/multi-common/scripts/run.py validate --output-root analysis/multi-common/.build/check-01 --archive analysis/multi-common/.build/check-01.zip
 ```
 
@@ -98,7 +98,7 @@ Use a new output/archive name each time; existing paths are refused. Output dire
 
 Rebuild E and replay the eight model fixtures from the packaged configurations and inputs:
 
-```text
+```txt
 python analysis/multi-common/scripts/run.py replay analysis/multi-common/validation.zip --output-root analysis/multi-common/.build/replay-01
 ```
 
@@ -106,7 +106,7 @@ Replay verifies every archive member before extraction, checks path safety, and 
 
 Run F's focused tests without building the simulator:
 
-```text
+```txt
 python -m unittest discover -s analysis/multi-common/tests -v
 ```
 
@@ -136,7 +136,7 @@ Each inputs archive contains `topology.json` (original IDs, original edges, outs
 
 To reproduce preparation, download the linked `.txt.gz` into `.build/cache/` and run from the repository root:
 
-```text
+```txt
 python analysis/multi-common/scripts/prepare.py --dataset analysis/multi-common/.build/cache/roadNet-TX.txt.gz --output-root analysis/multi-common/.build/prepare-check
 ```
 
@@ -148,31 +148,31 @@ The existing validator now builds per-queue counts once per timestep and groups 
 
 The source file contains 1,379,917 nodes and 3,843,320 records: 1,921,660 unique undirected edges, the same number of reverse/duplicate records, and no self-loops. The archived topology distinguishes original roads from permitted directions:
 
-| Scale | Queues | Original roads | Directed links | Boundary nodes / exits | Maximum exit distance |
-|---|---:|---:|---:|---:|---:|
-| SMALL | 20 | 22 | 22 | 7 / 1 | 8 |
-| MEDIUM | 200 | 247 | 216 | 23 / 10 | 14 |
-| LARGE | 2,000 | 2,544 | 2,238 | 62 / 62 | 45 |
+| Scale  | Queues | Original roads | Directed links | Boundary nodes / exits | Maximum exit distance |
+| ------ | -----: | -------------: | -------------: | ---------------------: | --------------------: |
+| SMALL  |     20 |             22 |             22 |                  7 / 1 |                     8 |
+| MEDIUM |    200 |            247 |            216 |                23 / 10 |                    14 |
+| LARGE  |  2,000 |          2,544 |          2,238 |                62 / 62 |                    45 |
 
 Across the nine prepared workloads per scale, actual counts are 1,942–2,074 (SMALL), 19,768–20,085 (MEDIUM), and 199,353–200,493 (LARGE), all within the required ranges. The three input archives total 14.44 MB: approximately 0.15/1.30/12.99 MB respectively.
 
 Pilots used seed 42 and a target of 2,000 vehicles **at every scale**. Each cell below gives completed / dropped vehicles. All runs drained, every offered vehicle was accounted for, every node was visited, and C's per-visit measurements matched the independent ledger.
 
-| Scale | Low demand | Stressed demand | Overloaded demand |
-|---|---:|---:|---:|
-| SMALL | 2,074 / 0 | 2,013 / 54 | 1,387 / 632 |
-| MEDIUM | 2,052 / 0 | 2,003 / 0 | 1,918 / 64 |
-| LARGE | 2,035 / 32 | 1,761 / 250 | 1,664 / 316 |
+| Scale  | Low demand | Stressed demand | Overloaded demand |
+| ------ | ---------: | --------------: | ----------------: |
+| SMALL  |  2,074 / 0 |      2,013 / 54 |       1,387 / 632 |
+| MEDIUM |  2,052 / 0 |       2,003 / 0 |        1,918 / 64 |
+| LARGE  | 2,035 / 32 |     1,761 / 250 |       1,664 / 316 |
 
 These are preparation observations, not the final three-scale study. In particular, MEDIUM/LARGE pilot counts are below their assignment ranges. The demand labels describe nominal pressure, not a guarantee of zero loss at low demand. The LARGE low-demand pilot still dropped 32 jobs: finite queues, spatially ordered ingress assignment, unequal route lengths and short-run transients can concentrate traffic. The pilot does not isolate which mechanism caused each loss. Full workload files use the required ranges and the same declared rules.
 
 An extracted SMALL input archive reproduced its low/seed-42 pilot's raw events, queue metrics and sink byte-for-byte. Preparation also checks every input archive's member hashes. The separate input audit verifies every original/transformed vehicle's ID, arrival, ingress and work, all nested node maps, resource totals, and paired experiment hashes.
 
 | Planned scale batch (27 runs) | Estimated compressed raw evidence |
-|---|---:|
-| SMALL | 6.7 MB |
-| MEDIUM | 105.4 MB |
-| LARGE | 4.33 GB |
+| ----------------------------- | --------------------------------: |
+| SMALL                         |                            6.7 MB |
+| MEDIUM                        |                          105.4 MB |
+| LARGE                         |                           4.33 GB |
 
 These are linear projections from pilot ZIP sizes per offered vehicle, weighted for three low, 21 stressed and three overloaded runs. They are **estimates**, excluding prepared inputs, analysis copies, native C results and figures; resource variants can also change output size. About 4.44 GB overall exceeds the provisional 200 MB repository budget, and MEDIUM/LARGE exceed the 50 MB archive target. The manifests describe the proposed 81 runs; they do not authorize that batch or settle evidence storage.
 
@@ -196,7 +196,6 @@ Keep subsequent work proportional: reuse saved raw outputs when only reporting c
 
 References: course handout **Queue Lab.pdf**, Objective F page 30; [analysis requirements](../TODO.md); [E implementation](../../implementation/obj-e/); [C implementation](../../implementation/obj-c/). The synthetic fixtures exercise the planned model without claiming measured Texas traffic behavior.
 
-
 ## Shared efficiency improvements and MEDIUM pilot
 
 The shared runner now caches compiled programs in ignored `.build/build-cache/`. Each recipe includes hashes of all exported source/header files, ordered compiler arguments and include paths, the compiler path/version/target/hash, hashes of its compiler/assembler/linker programs, and relevant search-path environment settings. Exported sources are rehashed before each lookup; the cached executable and its copied executable must match the saved binary SHA-256. Missing, corrupt or mismatched entries rebuild. Native test programs and interface checks still run on cache hits. The preparation workflow uses the same compiler cache. The cache is a local performance aid, not portable evidence or a substitute for tests.
@@ -207,7 +206,7 @@ This removes whole-file event/metric tables. It is **not constant-memory validat
 
 Select an existing manifest row without modifying the manifest:
 
-```text
+```txt
 python analysis/multi-common/scripts/analyze.py --scale MEDIUM --run stressed-42-+0 --output-root analysis/multi-common/.build/medium-pilot-new
 ```
 
@@ -219,20 +218,20 @@ The completion of all three multi-queue scales (SMALL, MEDIUM, and LARGE) provid
 
 ### Summary Comparison Across Scales
 
-| Characteristic | SMALL | MEDIUM | LARGE |
-|---|---:|---:|---:|
-| **Sampled Graph Nodes (Queues)** | 20 | 200 | 2,000 |
-| **Directed Traffic Links** | 22 | 216 | 2,238 |
-| **Boundary Exit Sinks** | 1 | 10 | 62 |
-| **Maximum Distance to Exit (hops)** | 8 | 14 | 45 |
-| **Evaluated Workload Range (jobs)** | 1,942–2,074 | 19,768–20,085 | 200,372 |
-| **Total Queue Visits (Stressed Baseline)** | 11,801 | 184,812 | 3,424,613 |
-| **Baseline Mean Response Time (steps)** | 9.72 | 8.23 | 22.04 |
-| **Theoretical Hop-Distance Floor (steps)** | ~5.0 | ~7.2 | ~19.1 |
-| **Peak Departures per Step** | 4 | 38 | 49 |
-| **Stressed Baseline Loss Rate** | 2.61% | 0.01% | 13.11% |
-| **+100% Resource Loss Rate** | 0.00% | 0.00% | 4.53% |
-| **−30% Resource Loss Rate** | 23.46% | 4.87% | 15.76% |
+| Characteristic                             |       SMALL |        MEDIUM |     LARGE |
+| ------------------------------------------ | ----------: | ------------: | --------: |
+| **Sampled Graph Nodes (Queues)**           |          20 |           200 |     2,000 |
+| **Directed Traffic Links**                 |          22 |           216 |     2,238 |
+| **Boundary Exit Sinks**                    |           1 |            10 |        62 |
+| **Maximum Distance to Exit (hops)**        |           8 |            14 |        45 |
+| **Evaluated Workload Range (jobs)**        | 1,942–2,074 | 19,768–20,085 |   200,372 |
+| **Total Queue Visits (Stressed Baseline)** |      11,801 |       184,812 | 3,424,613 |
+| **Baseline Mean Response Time (steps)**    |        9.72 |          8.23 |     22.04 |
+| **Theoretical Hop-Distance Floor (steps)** |        ~5.0 |          ~7.2 |     ~19.1 |
+| **Peak Departures per Step**               |           4 |            38 |        49 |
+| **Stressed Baseline Loss Rate**            |       2.61% |         0.01% |    13.11% |
+| **+100% Resource Loss Rate**               |       0.00% |         0.00% |     4.53% |
+| **−30% Resource Loss Rate**                |      23.46% |         4.87% |    15.76% |
 
 ### Core Architectural Findings for Section G
 
@@ -255,4 +254,3 @@ The completion of all three multi-queue scales (SMALL, MEDIUM, and LARGE) provid
 - [SMALL Scale Study (20 queues)](../multi-SMALL/README.md)
 - [MEDIUM Scale Study (200 queues)](../multi-MEDIUM/README.md)
 - [LARGE Scale Study (2,000 queues)](../multi-LARGE/README.md)
-

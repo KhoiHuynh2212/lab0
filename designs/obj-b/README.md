@@ -4,7 +4,7 @@ Objective B is the simple queue simulator.
 
 The simulator takes a queue configuration and a source workload, then advances the system one timestep at a time.
 
-```text
+```txt
 ┌───────────────────────────────────────┐
 │ queue configuration + source workload │
 └───────────────────┬───────────────────┘

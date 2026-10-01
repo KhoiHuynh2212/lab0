@@ -13,7 +13,7 @@ This directory contains workload files and plots for the workload generator and 
 
 Every workload uses the same columns expected by Obj-B:
 
-```text
+```txt
 Job Id,arrival time,Tasks
 ```
 

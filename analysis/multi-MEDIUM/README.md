@@ -162,6 +162,6 @@ To keep the Git repository within standard size limits and avoid checking in tra
 
 ## Reproduce
 
-```text
+```txt
 python analysis/multi-common/scripts/analyze.py --scale MEDIUM --output-root analysis/multi-common/.build/medium-reproduce
 ```

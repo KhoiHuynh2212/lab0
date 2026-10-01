@@ -7,7 +7,7 @@ Objective A contains two C++ programs:
 
 Both programs use the same workload format as Objective B.
 
-```text
+```txt
              ┌────────────────────┐
              │ workload-generator │
              └─────────┬──────────┘
@@ -58,7 +58,7 @@ Input is a workload CSV plus plot options.
 
 Output is a PNG image:
 
-```text
+```txt
 ┌──────────────┐     ┌─────────────────────┐     ┌──────────┐
 │ workload.csv │ ──→ │ workload-visualizer │ ──→ │ plot.png │
 └──────────────┘     └─────────────────────┘     └──────────┘
@@ -211,7 +211,7 @@ implementation/obj-a/run-all-tests.sh leak
 
 The Obj-A test script runs:
 
-```text
+```txt
 ┌──────────────────────────┐
 │ workload-generator tests │
 └────────────┬─────────────┘
@@ -251,7 +251,7 @@ q0,8,1,Sub-10*,10,generated.csv,out.csv,[],[]
 
 The full connection is:
 
-```text
+```txt
              ┌─────────────────┐
              │ Obj-A Generator │
              └────────┬────────┘

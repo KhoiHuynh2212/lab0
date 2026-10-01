@@ -150,7 +150,7 @@ E's `create-config-from-network` and `pretty-print-events` are also exercised.
 
 From the repository root:
 
-```text
+```txt
 python analysis/multi-common/scripts/analyze.py --scale SMALL --output-root analysis/multi-common/.build/small-check
 ```
 

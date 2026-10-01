@@ -78,7 +78,7 @@ terminal summary
 
 The flow is:
 
-```text
+```txt
 ┌─────────────────┐     ┌────────────────────┐     ┌─────────────┐
 │ source workload │ ──→ │ FIFO waiting queue │ ──→ │   servers   │
 └─────────────────┘     └─────────┬──────────┘     └──────┬──────┘
@@ -161,7 +161,7 @@ Sub-X
 
 If the first task is larger than `X`, subtract `X`:
 
-```text
+```txt
 ┌──────────────────────┐
 │    ['0: W 25']       │
 └──────────┬───────────┘
@@ -174,7 +174,7 @@ If the first task is larger than `X`, subtract `X`:
 
 If the first task is less than or equal to `X`, remove it:
 
-```text
+```txt
 ┌──────────────────────────────┐
 │ ['0: W 10', '1: W 20']       │
 └──────────────┬───────────────┘
@@ -211,7 +211,7 @@ For:
 
 this becomes:
 
-```text
+```txt
 ┌──────┐     ┌──────┐     ┌─────┐     ┌────┐
 │ W 25 │ ──→ │ W 15 │ ──→ │ W 5 │ ──→ │ [] │
 └──────┘     └──────┘     └─────┘     └────┘
@@ -412,7 +412,7 @@ j1:       [ wait ]          [server]
 
 Obj-A creates source workloads using exactly the format Obj-B reads:
 
-```text
+```txt
 ┌──────────────────────────┐
 │ Obj-A workload-generator │
 └────────────┬─────────────┘

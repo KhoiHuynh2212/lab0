@@ -154,6 +154,6 @@ Due to repository size limits (~1.7 GB total footprint), the complete raw logs a
 
 ## Reproduce
 
-```text
+```txt
 python analysis/multi-common/scripts/analyze.py --scale LARGE --run stressed-42-+0 --run stressed-42-+25 --run stressed-42-+50 --run stressed-42-+100 --run stressed-42--10 --run stressed-42--20 --run stressed-42--30 --output-root analysis/multi-common/.build/large-reproduce
 ```

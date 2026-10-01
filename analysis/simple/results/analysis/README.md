@@ -124,13 +124,13 @@ Requirements: Python 3.10+ with `matplotlib` and `Pillow`, Git with the recorded
 
 From the repository root:
 
-```text
+```txt
 python analysis/simple/scripts/analyze_results.py --output-root analysis/simple/.build/analysis-replay-01
 ```
 
 For a smaller paired comparison:
 
-```text
+```txt
 python analysis/simple/scripts/analyze_results.py --output-root analysis/simple/.build/analysis-pilot-new --run-ids baseline-over-h28800-seed42 queue40-over-h28800-seed42 bays2-over-h28800-seed42
 ```
 
@@ -140,7 +140,7 @@ Use an interpreter that has both plotting dependencies installed. In PowerShell,
 
 Run the D tests independently with:
 
-```text
+```txt
 python -m unittest discover -s analysis/simple/tests -v
 ```
 

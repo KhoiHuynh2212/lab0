@@ -49,7 +49,7 @@ The user also chooses exactly one plot mode:
 
 The output is a PNG image.
 
-```text
+```txt
 ┌─────────────────────┐
 │    workload.csv     │
 └──────────┬──────────┘
@@ -179,7 +179,7 @@ The program writes the PNG directly from C++.
 
 The basic steps are:
 
-```text
+```txt
 ┌──────────────────────────────┐
 │    create image in memory    │
 └──────────────┬───────────────┘

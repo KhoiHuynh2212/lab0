@@ -25,7 +25,7 @@ At each timestep it:
 
 The basic flow is:
 
-```text
+```txt
 ┌───────────────────────────────────────┐
 │ interval + distribution + task        │
 │ settings                              │
@@ -481,7 +481,7 @@ implementation/obj-a/workload-generator/run-all-tests.sh
 
 The generated file is already in the source-workload format used by Obj-B:
 
-```text
+```txt
 ┌────────────────────┐
 │ workload-generator │
 └─────────┬──────────┘

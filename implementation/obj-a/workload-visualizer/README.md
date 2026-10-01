@@ -32,7 +32,7 @@ len(Tasks)
 
 The main flow is:
 
-```text
+```txt
 ┌─────────────────────┐
 │    workload.csv     │
 └──────────┬──────────┘
@@ -410,7 +410,7 @@ implementation/obj-a/workload-visualizer/run-all-tests.sh leak
 
 The visualizer accepts the same workload format used by both programs:
 
-```text
+```txt
              ┌────────────────────┐
              │ workload-generator │
              └─────────┬──────────┘

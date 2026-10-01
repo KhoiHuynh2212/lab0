@@ -9,7 +9,7 @@ It has two parts:
 
 The overall design is:
 
-```text
+```txt
                ┌────────────────────┐
                │ Generator settings │
                └─────────┬──────────┘
@@ -135,7 +135,7 @@ The working program is in:
 
 The generator does not need a conversion step before Obj-B.
 
-```text
+```txt
 ┌────────────────────────┐
 │ Obj-A generator output │
 └────────────┬───────────┘

@@ -20,7 +20,7 @@ These questions address the modeling, metrics, workload justification, scale com
 
 ## 2. Model boundary and assumptions
 
-```text
+```txt
 Arriving cars -> One FIFO waiting line -> Available wash bay -> Completed cars
                                               |
                             Pre-rinse -> Soap -> Scrub -> Rinse -> Dry
@@ -315,7 +315,7 @@ Across the 60 runs, 44,510 offered-car instances were accounted for as 39,339 co
 
 **Arrival window versus draining.** For horizon `H`, arrivals occur at timestamps in `[0,H)`. `completed_before_cutoff` counts departures strictly before `H`. `unfinished_at_cutoff` is the state after timestep `H-1`, before processing events at `H`; a departure exactly at `H` is therefore outside that window. The verifier checks:
 
-```text
+```txt
 offered = completed + rejected                 (after the system drains)
 completed = completed_before_cutoff + unfinished_at_cutoff
 unfinished_at_cutoff = waiting_at_cutoff + busy_at_cutoff
@@ -490,7 +490,7 @@ All 60 runs passed a finite-run conservation check: the sum of waiting occupancy
 
 For long overloaded baseline seed 42, the run starts empty and fully drains at `T = 29408`. It completes `N = 861` admitted cars. The integrated waiting-plus-service occupancy is `A = 542222` car-steps:
 
-```text
+```txt
 Mean occupancy L     = A / T = 542222 / 29408 = 18.437908 cars
 Accepted rate        = N / T = 861 / 29408    = 0.02927775 cars/step
 Mean complete visit W = A / N = 542222 / 861  = 629.758420 steps
@@ -542,7 +542,7 @@ These are native functional tests, not the full team shell-runner result. WSL ac
 
 From the repository root, with Python 3.10 or newer, Git, and a compatible C++20 GCC compiler available:
 
-```text
+```txt
 python analysis/simple/scripts/validate_carwash.py --output-root analysis/simple/.build/replay-01
 ```
 
@@ -550,7 +550,7 @@ This builds the tools, runs their existing C++ tests and basic CLI checks, then 
 
 The template uses placeholder source/sink fields. The script fills them with paths appropriate to the run location; inputs are not resolved from an accidental working directory. It runs B without a time limit using each run directory as the working directory:
 
-```text
+```txt
 <built-simple-queue-sim> config.csv --metrics qmet.csv --events job.log
 ```
 
@@ -564,13 +564,13 @@ Run commands from the Git repository root: the folder containing `analysis/` and
 
 The saved workloads and manifest already exist in this checkout. To regenerate them for comparison without overwriting them:
 
-```text
+```txt
 python analysis/simple/scripts/prepare_workloads.py --output-root analysis/simple/.build/workloads-replay-01
 ```
 
 The default seeds are 42, 43, and 44. This produces 18 workloads, 60 manifest rows, four input figures, and provenance/summary files in the new output root. For a smaller six-workload/20-row pilot:
 
-```text
+```txt
 python analysis/simple/scripts/prepare_workloads.py --output-root analysis/simple/.build/workloads-pilot-01 --seeds 42
 ```
 
@@ -580,7 +580,7 @@ The preparation process builds the unchanged A generator/visualizer, checks repe
 
 The standard output layout is:
 
-```text
+```txt
 experiments.csv
 workloads/preparation.json
 workloads/generated/<workload-id>/generator-output.csv
@@ -601,13 +601,13 @@ The local `.gitattributes` preserves the exact bytes of generated CSVs, the mani
 
 From the repository root, rerun all 60 experiments into a new ignored directory:
 
-```text
+```txt
 python analysis/simple/scripts/run_experiments.py --output-root analysis/simple/.build/experiments-replay-01
 ```
 
 To check one case first:
 
-```text
+```txt
 python analysis/simple/scripts/run_experiments.py --output-root analysis/simple/.build/experiments-sample-01 --run-ids baseline-over-h28800-seed42
 ```
 
@@ -617,7 +617,7 @@ The script verifies the entire manifest before launching the requested subset. I
 
 To run the accounting-verifier tests without building or rerunning simulations:
 
-```text
+```txt
 python -m unittest discover -s analysis/simple/tests -v
 ```
 
@@ -627,7 +627,7 @@ Tests use the saved deterministic examples and create temporary copies under ign
 
 With Python 3.10+ including matplotlib and Pillow, Git, and a C++20 GCC compiler, run from the repository root:
 
-```text
+```txt
 python analysis/simple/scripts/analyze_results.py --output-root analysis/simple/.build/analysis-replay-01
 ```
 

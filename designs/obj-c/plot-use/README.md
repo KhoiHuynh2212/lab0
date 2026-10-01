@@ -2,15 +2,11 @@
 
 `plot-use` turns rolling USE-method history from `compute-use` into three separate PNG plots for analysis: Utilization, Saturation, and Error Rate versus time-step. Window sizes 10 / 100 / 1000 are drawn as shades of each metric’s color family.
 
-The program is written in **Python** (matplotlib) and lives in:
-
-[`/implementation/obj-c/plot-use/`](/implementation/obj-c/plot-use/)
-
 ---
 
-## 1. What the Program Does
+# 1. What the Program Does
 
-```text
+```txt
 ┌──────────────┐     ┌───────────┐     ┌─────────────────────────┐
 │   quse.csv   │ ──→ │ plot-use  │ ──→ │ results/utilization.png │
 └──────────────┘     └───────────┘     │ results/saturation.png  │
@@ -18,11 +14,11 @@ The program is written in **Python** (matplotlib) and lives in:
                                        └─────────────────────────┘
 ```
 
-| Output file | Y-axis | Series colors |
-| --- | --- | --- |
+|    Output file    |   Y-axis    | Series colors                           |
+| :---------------: | :---------: | :-------------------------------------- |
 | `utilization.png` | Utilization | Blue shades for windows 10 / 100 / 1000 |
-| `saturation.png` | Saturation | Yellow shades (filled under the curves) |
-| `error-rate.png` | Error Rate | Red shades |
+| `saturation.png`  | Saturation  | Yellow shades (filled under the curves) |
+| `error-rate.png`  | Error Rate  | Red shades                              |
 
 Shorter windows use darker shades so fast-moving signals stay visually prominent. Prefer feeding a single queue’s `quse.csv` (after `filter-by-queue` → `compute-use`).
 
@@ -30,7 +26,7 @@ These USE plots are meant to sit alongside later Job response-time and throughpu
 
 ---
 
-## 2. Input CSV
+# 2. Input CSV
 
 Exact header produced by [`compute-use`](/designs/obj-c/compute-use/README.md):
 
@@ -44,7 +40,7 @@ Column names are matched with alphanumeric case-insensitive lookup. Numeric fiel
 
 ---
 
-## 3. Output PNGs
+# 3. Output PNGs
 
 By default, plots are written under [`/implementation/obj-c/plot-use/results/`](/implementation/obj-c/plot-use/results/):
 
@@ -54,7 +50,7 @@ By default, plots are written under [`/implementation/obj-c/plot-use/results/`](
 
 ---
 
-## 4. Command-Line Interface
+# 4. Command-Line Interface
 
 ```bash
 ./plot-use <quse.csv>
@@ -62,11 +58,11 @@ By default, plots are written under [`/implementation/obj-c/plot-use/results/`](
 ./plot-use --help
 ```
 
-| Argument | Meaning |
-| --- | --- |
-| `quse.csv` | USE-metrics input from `compute-use` |
-| `results_dir` | Optional output directory (default: `plot-use/results`) |
-| `--help`, `-h` | Show usage text |
+|    Argument    | Meaning                                                 |
+| :------------: | :------------------------------------------------------ |
+|   `quse.csv`   | USE-metrics input from `compute-use`                    |
+| `results_dir`  | Optional output directory (default: `plot-use/results`) |
+| `--help`, `-h` | Show usage text                                         |
 
 Example:
 
@@ -76,7 +72,7 @@ Example:
 
 ---
 
-## 5. Build and Test (Linux)
+# 5. Build and Test (Linux)
 
 Requires `python3` with `matplotlib`.
 
@@ -93,7 +89,7 @@ python3 -m pip install matplotlib
 
 ---
 
-## 6. Implementation Notes
+# 6. Implementation Notes
 
 - Language: Python 3 with matplotlib (Agg backend) and the standard library `csv` module.
 - Color guidance from the course slides: one color family per metric, shades for the 10 / 100 / 1000 windows.
@@ -101,7 +97,7 @@ python3 -m pip install matplotlib
 
 ---
 
-## 7. Related Documentation
+# 7. Related Documentation
 
 - Upstream metrics: [`/designs/obj-c/compute-use/README.md`](/designs/obj-c/compute-use/README.md)
 - USE method: [https://www.brendangregg.com/usemethod.html](https://www.brendangregg.com/usemethod.html)

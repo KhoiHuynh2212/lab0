@@ -2,17 +2,13 @@
 
 `filter-by-queue` keeps only the rows for selected queue systems in a queue metrics CSV file such as `qmet.csv` from Objective B.
 
-The program is written in **C++** (same toolchain as Objectives A and B) and lives in:
-
-[`/implementation/obj-c/filter-by-queue/`](/implementation/obj-c/filter-by-queue/)
-
 ---
 
-## 1. What the Program Does
+# 1. What the Program Does
 
 The tool reads a metrics CSV, finds the `queue-sys-id` column, and writes a new CSV with the same header and only the rows whose queue id appears in the filter list.
 
-```text
+```txt
 ┌──────────────┐     ┌─────────────────┐     ┌───────────────┐
 │  qmetin.csv  │ ──→ │ filter-by-queue │ ──→ │  qmetout.csv  │
 └──────────────┘     └─────────────────┘     └───────────────┘
@@ -20,7 +16,7 @@ The tool reads a metrics CSV, finds the `queue-sys-id` column, and writes a new 
 
 ---
 
-## 2. Input CSV
+# 2. Input CSV
 
 The file must contain a header row with a `queue-sys-id` column (case and punctuation in the header name are ignored when locating the column).
 
@@ -38,7 +34,7 @@ This matches the metrics format written by [`simple-queue-sim`](/implementation/
 
 ---
 
-## 3. Command-Line Interface
+# 3. Command-Line Interface
 
 ```bash
 ./filter-by-queue <input.csv> <output.csv> --queue=<id>[,<id>...]
@@ -46,12 +42,12 @@ This matches the metrics format written by [`simple-queue-sim`](/implementation/
 ./filter-by-queue --help
 ```
 
-| Argument | Meaning |
-| --- | --- |
-| `input.csv` | Source metrics file |
-| `output.csv` | Filtered output file |
+|         Argument         | Meaning                                                   |
+| :----------------------: | :-------------------------------------------------------- |
+|       `input.csv`        | Source metrics file                                       |
+|       `output.csv`       | Filtered output file                                      |
 | `--queue=` / `--queues=` | One or more comma-separated `queue-sys-id` values to keep |
-| `--help`, `-h` | Show usage text |
+|      `--help`, `-h`      | Show usage text                                           |
 
 Examples:
 
@@ -62,9 +58,7 @@ Examples:
 
 ---
 
-## 4. Build and Test (Linux)
-
-Requires `g++` (C++20), `make`, and Valgrind for the test suite.
+# 4. Build and Test
 
 ```bash
 make -C implementation/obj-c/filter-by-queue build
@@ -78,7 +72,7 @@ make -C implementation/obj-c/filter-by-queue test
 
 ---
 
-## 5. Implementation Notes
+# 5. Implementation Notes
 
 - Language and standard: C++20 with `g++`, matching Obj-A / Obj-B.
 - I/O: standard library `<fstream>` / `<iostream>` (no platform-specific APIs).
@@ -87,7 +81,7 @@ make -C implementation/obj-c/filter-by-queue test
 
 ---
 
-## 6. Related Documentation
+# 6. Related Documentation
 
 - Objective B metrics output: [`/designs/obj-b/simple-queue-sim/README.md`](/designs/obj-b/simple-queue-sim/README.md)
 - Implementation README: [`/implementation/obj-c/filter-by-queue/README.md`](/implementation/obj-c/filter-by-queue/README.md)

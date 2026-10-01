@@ -6,7 +6,7 @@ It models one FIFO waiting queue with one or more servers.
 
 The overall flow is:
 
-```text
+```txt
 ┌─────────────────┐     ┌────────────────────┐
 │ source workload │ ──→ │ FIFO waiting queue │
 └─────────────────┘     └─────────┬──────────┘
@@ -476,7 +476,7 @@ A job with no tasks can be routed immediately.
 
 When a job is ready to leave:
 
-```text
+```txt
 ┌────────────────────────┐
 │ Tasks == []            │
 │ and sink exists        │
@@ -490,7 +490,7 @@ When a job is ready to leave:
 
 Otherwise, if an outgoing edge exists:
 
-```text
+```txt
 ┌─────┐     ┌───────────────┐
 │ job │ ──→ │ outgoing edge │
 └─────┘     └───────────────┘
@@ -577,7 +577,7 @@ implementation/obj-b/simple-queue-sim/simple-queue-sim \
 
 The files are connected like this:
 
-```text
+```txt
                     ┌──────────────────┐
                     │ queue-config.csv │
                     └────────┬─────────┘
@@ -689,7 +689,7 @@ Makefile
 
 The Obj-A generator creates the exact workload format used by the Obj-B source:
 
-```text
+```txt
 ┌──────────────────────────┐
 │ Obj-A workload-generator │
 └────────────┬─────────────┘
@@ -707,7 +707,7 @@ The Obj-A generator creates the exact workload format used by the Obj-B source:
 
 After Obj-B finishes, Obj-A's visualizer can read the sink file:
 
-```text
+```txt
 ┌──────────────────────────┐
 │   Obj-B sink workload    │
 └────────────┬─────────────┘

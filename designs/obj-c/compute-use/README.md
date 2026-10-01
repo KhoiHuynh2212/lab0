@@ -1,34 +1,30 @@
-# Objective C: compute-use
+# 📈 Objective C: compute-use
 
 `compute-use` turns a chronological queue-metrics CSV (typically pre-filtered by `filter-by-queue`) into rolling USE-method history: Utilization, Saturation, and Errors at windows of size 10, 100, and 1000.
 
-The program is written in **C++** (same toolchain as Objectives A and B) and lives in:
-
-[`/implementation/obj-c/compute-use/`](/implementation/obj-c/compute-use/)
-
 ---
 
-## 1. What the Program Does
+# 1. What the Program Does
 
 For every input row at time step $t$, the tool evaluates three metrics over the last $W$ samples ($W \in \{10, 100, 1000\}$), using the prefix of length $k = t + 1$ until the window is full.
 
-```text
+```txt
 ┌──────────────┐     ┌─────────────┐     ┌──────────────┐
 │   qmet.csv   │ ──→ │ compute-use │ ──→ │   quse.csv   │
 └──────────────┘     └─────────────┘     └──────────────┘
 ```
 
-| Metric | Meaning | Formula over window of size $k$ |
-| --- | --- | --- |
+|   Metric    | Meaning                                         | Formula over window of size $k$                                                                             |
+| :---------: | :---------------------------------------------- | :---------------------------------------------------------------------------------------------------------- |
 | Utilization | % of time a job is in service (rounded to ones) | $\mathrm{round}\!\left(\frac{1}{k}\sum u_i\right)$ where $u_i = 1$ if `num-jobs-in-service` $> 0$, else $0$ |
-| Saturation | Average jobs queueing (rounded to ones) | $\mathrm{round}\!\left(\frac{1}{k}\sum\right.$ `num-jobs-in-queue`$_i\left.\right)$ |
-| Errors | Total errors seen in the window | $\sum$ `Num-of-errors`$_i$ |
+| Saturation  | Average jobs queueing (rounded to ones)         | $\mathrm{round}\!\left(\frac{1}{k}\sum\right.$ `num-jobs-in-queue`$_i\left.\right)$                         |
+|   Errors    | Total errors seen in the window                 | $\sum$ `Num-of-errors`$_i$                                                                                  |
 
 Output `time-step` is taken from the input row. Prefer feeding a single queue (e.g. after `filter-by-queue`) so the series is one queueing system.
 
 ---
 
-## 2. Input CSV
+# 2. Input CSV
 
 Sorted by `time-step`. Column names match Objective B metrics (case and punctuation are ignored when locating columns):
 
@@ -39,17 +35,17 @@ time-step,queue-sys-id,num-jobs-in-queue,num-jobs-in-service,Num-of-errors
 2,0,3,1,0
 ```
 
-| Field | Meaning |
-| --- | --- |
-| `time-step` | Discrete clock tick |
-| `queue-sys-id` | Queue identifier (often a single id after `filter-by-queue`) |
-| `num-jobs-in-queue` | Waiting jobs ($N_Q$) |
-| `num-jobs-in-service` | Jobs in service ($N_S$) |
-| `Num-of-errors` | Errors recorded at that step |
+|         Field         | Meaning                                                      |
+| :-------------------: | :----------------------------------------------------------- |
+|      `time-step`      | Discrete clock tick                                          |
+|    `queue-sys-id`     | Queue identifier (often a single id after `filter-by-queue`) |
+|  `num-jobs-in-queue`  | Waiting jobs ($N_Q$)                                         |
+| `num-jobs-in-service` | Jobs in service ($N_S$)                                      |
+|    `Num-of-errors`    | Errors recorded at that step                                 |
 
 ---
 
-## 3. Output CSV
+# 3. Output CSV
 
 Exact header:
 
@@ -61,18 +57,18 @@ One output row per input data row, carrying the three metrics for each of the th
 
 ---
 
-## 4. Command-Line Interface
+# 4. Command-Line Interface
 
 ```bash
 ./compute-use <input.csv> <output.csv>
 ./compute-use --help
 ```
 
-| Argument | Meaning |
-| --- | --- |
-| `input.csv` | Source queue-metrics file |
-| `output.csv` | USE-metrics output file |
-| `--help`, `-h` | Show usage text |
+|    Argument    | Meaning                   |
+| :------------: | :------------------------ |
+|  `input.csv`   | Source queue-metrics file |
+|  `output.csv`  | USE-metrics output file   |
+| `--help`, `-h` | Show usage text           |
 
 Example:
 
@@ -82,7 +78,7 @@ Example:
 
 ---
 
-## 5. Build and Test (Linux)
+# 5. Build and Test (Linux)
 
 Requires `g++` (C++20), `make`, and Valgrind for the test suite.
 
@@ -93,7 +89,7 @@ make -C implementation/obj-c/compute-use test
 
 ---
 
-## 6. Implementation Notes
+# 6. Implementation Notes
 
 - Language and standard: C++20 with `g++`, matching Obj-A / Obj-B / filter-by-queue / filter-by-job.
 - Sliding windows: three fixed-capacity deques with running sums for $O(1)$ updates per row.
@@ -102,7 +98,7 @@ make -C implementation/obj-c/compute-use test
 
 ---
 
-## 7. Related Documentation
+# 7. Related Documentation
 
 - Implementation README: [`/implementation/obj-c/compute-use/README.md`](/implementation/obj-c/compute-use/README.md)
 - Upstream filter: [`/designs/obj-c/filter-by-queue/README.md`](/designs/obj-c/filter-by-queue/README.md)

@@ -4,7 +4,7 @@ This lab builds a queueing-system simulator and the tools around it. The reposit
 
 The main idea is:
 
-```text
+```txt
 workloads → queue simulation → metrics/events → analysis → modelling
 ```
 
@@ -69,7 +69,7 @@ Each objective has its own section below. As more parts of the lab are added, th
 
 All commands in this README are written as if they are run from the repository root:
 
-```text
+```txt
 lab0/
 ```
 
@@ -81,7 +81,7 @@ make -C implementation/obj-a build
 
 This builds:
 
-```text
+```txt
 implementation/obj-a/workload-generator/workload-generator
 implementation/obj-a/workload-visualizer/workload-visualizer
 ```
@@ -100,7 +100,7 @@ make -C implementation/obj-b/simple-queue-sim build
 
 This builds:
 
-```text
+```txt
 implementation/obj-b/simple-queue-sim/simple-queue-sim
 ```
 
@@ -129,7 +129,7 @@ Add the main build, test, and clean commands here as Objectives C, D, and E gain
 
 The repository keeps designs, examples, implementations, and analysis separate so each objective can grow without putting everything in one directory.
 
-```text
+```txt
 .
 ├── .gitlab-ci.yml
 ├── analysis
@@ -230,13 +230,13 @@ j2,20,"['0: W 10', '1: W 10', '2: W 10']"
 
 A task has the form:
 
-```text
+```txt
 <task-id>: W <positive work amount>
 ```
 
 For example:
 
-```text
+```txt
 0: W 10
 ```
 
@@ -244,7 +244,7 @@ means task `0` has `10` units of work.
 
 An empty task list means the job is done:
 
-```text
+```txt
 []
 ```
 
@@ -277,7 +277,7 @@ implementation/obj-a/workload-generator/workload-generator \
 
 The workload generator supports:
 
-```text
+```txt
 uniform
 normal
 geometric
@@ -309,7 +309,7 @@ The visualizer also supports titles, axis limits, and custom image sizes. See th
 
 ## Objective A Inputs and Outputs
 
-```text
+```txt
 Generator command-line options
             │
             ↓
@@ -377,7 +377,7 @@ q0,8,1,Sub-10*,10,in.wl,out.wl,[],[]
 
 For this example:
 
-```text
+```txt
 Queue ID:             q0
 Waiting queue size:   8 jobs
 Servers:              1
@@ -426,7 +426,7 @@ implementation/obj-b/simple-queue-sim/simple-queue-sim \
 
 If those options are omitted, the default files are:
 
-```text
+```txt
 qmet.csv
 job.log
 ```
@@ -435,7 +435,7 @@ The complete input/output formats, server-function rules, event ordering, and co
 
 ## Objective B Flow
 
-```text
+```txt
 source workload ─↘︎
                    ↘︎
 queue configuration → simple-queue-sim → sink workload
@@ -453,7 +453,7 @@ Objective C contains the tools used to filter simulator output and turn queue me
 
 The repository has space for these tools:
 
-```text
+```txt
 implementation/obj-c/
 ├── compute-use
 ├── create-event-trace
@@ -482,7 +482,7 @@ The tools fall into a few main groups:
 
 Suggested locations:
 
-```text
+```txt
 /designs/obj-c/
 /examples/obj-c/
 /implementation/obj-c/
@@ -500,13 +500,13 @@ Objective D uses the tools from the earlier objectives to model and study a real
 
 The work for this objective belongs mainly in:
 
-```text
+```txt
 analysis/simple/
 ```
 
 The general process is:
 
-```text
+```txt
 pick a real process
         │
         ↓
@@ -550,7 +550,7 @@ Objective E extends the queueing work to multiple connected queue systems.
 
 The repository has space for:
 
-```text
+```txt
 designs/obj-e/
 ├── create-config-from-network
 ├── multi-queue-sim
@@ -574,7 +574,7 @@ examples/obj-e/
 
 Multi-queue results can be kept at different workload sizes in:
 
-```text
+```txt
 analysis/multi-SMALL/
 analysis/multi-MEDIUM/
 analysis/multi-LARGE/
@@ -592,7 +592,7 @@ The objectives are meant to pass files and results to each other instead of acti
 
 A useful high-level view is:
 
-```text
+```txt
                     Objective A
           workload-generator / visualizer
                        │
@@ -672,7 +672,7 @@ implementation/obj-b/simple-queue-sim/simple-queue-sim \
 
 After the run:
 
-```text
+```txt
 generated.csv   Objective A source workload
 completed.csv   Objective B completed-job workload
 qmet.csv        queue metrics

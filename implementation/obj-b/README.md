@@ -6,7 +6,7 @@ Objective B contains the C++ simple queue simulator in:
 
 The simulator reads a queue configuration and a source workload, then produces queue and job output files.
 
-```text
+```txt
 ┌─────────────────────────────────┐
 │ queue config + source workload  │
 └────────────────┬────────────────┘
@@ -172,7 +172,7 @@ implementation/obj-b/simple-queue-sim/run-all-tests.sh leak
 
 Obj-A's generator creates the source workload format used by Obj-B:
 
-```text
+```txt
 ┌──────────────────────────┐
 │ Obj-A workload-generator │
 └────────────┬─────────────┘
